@@ -6,6 +6,7 @@ library(ggplot2)
 #Sample size
 n <- 400
 
+
 #Criando sexo
 z<- rep(1,n/2) 
 w<-rep(0,n/2)
