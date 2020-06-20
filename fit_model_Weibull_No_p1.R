@@ -198,6 +198,7 @@ for (j in 1:length(N)){
     dados <- read.table(data.local, head=TRUE)
     
     
+    
       a<-glm(dados$z ~ dados$x,family=binomial(link='logit'))
       b<-summary(a)
       c<-flexsurvreg(Surv(dados$t, dados$d,type='right')~dados$x,dist="gamma",subset=dados$z==0, method="Nelder-Mead",control=list(fnscale = 250000),integ.opts = list(rel.tol=1e-8))
