@@ -3,7 +3,6 @@ library(knitr)
 library(ggplot2)
 
 
-
 #Sample size
 n <- 400
 
