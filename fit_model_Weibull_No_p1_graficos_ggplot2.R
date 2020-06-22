@@ -225,8 +225,7 @@ f3 <- ggplot(data = betas1, aes(x = samp, y = W6)) +
 library(gridExtra)
 grid.arrange(arrangeGrob(a3,b3, ncol=2), 
                         arrangeGrob(c3,d3, ncol=2),
-                        arrangeGrob(e3,f3, ncol=2), 
-                        heights=c(1.75/7, 1.75/7, 1.75/7, 1.75/7), ncol=1)
+                        arrangeGrob(e3,f3, ncol=2), ncol=1)
 
 
 
