@@ -1,4 +1,6 @@
 
+
+wd <- getwd()
 set.seed(13)
 
 if(!require(knitr)){install.packages("knitr")
@@ -157,7 +159,7 @@ hist(data$dist[data$sex==0],main="Histogram of distance for males",xlab="Distanc
 
 data$Sex<-c(rep("Female",200),rep("Male",200))
 
-tiff(file=paste(wd,"/Figures","/dist_hist.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+tiff(file=paste(wd,"/Figure","/dist_hist.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 ggplot(data, aes(x=dist))+
   geom_histogram(color="black", fill="white")+
   facet_grid(Sex ~ .)+
@@ -276,7 +278,7 @@ Regression<-c(rep("ZIWeibull",length(dom)*2),rep("ZIGamma",length(dom)*2))
 media2 = data.frame(Scaled_Age=c(dom,dom,dom,dom),media.1=media,Sex=Sex,grupo=Regression)
 
 
-tiff(file=paste(wd,"/Figures","/mean_distance.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+tiff(file=paste(wd,"/Figure","/mean_distance.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 par(xpd=NA)
 ggplot(data=media2, aes(x = Scaled_Age, y = media.1, group=Sex)) +
   #  geom_point(show.legend=FALSE, shape = 10) +
