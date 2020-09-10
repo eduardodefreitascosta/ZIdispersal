@@ -4,9 +4,16 @@
 ###--------------------------------------------------------------------------------------------###
 rm(list=ls(all=TRUE)) 
 
+
+if (!require(flexsurv)){
+  install.packages("flexsurv")
+}
+library(flexsurv)
+
+
 wd <- getwd()
 
-set.seed(123456)
+set.seed(13)
 
 source("function_Weibull_No_p1.r",local=TRUE)
 
@@ -16,17 +23,18 @@ source("function_Weibull_No_p1.r",local=TRUE)
 modelos <- c("dados_No_p1", "modelos_No_p1")
 N<-c(200,400,600,800,1000)
 
+dir.create(paste(wd,"/Output",sep=""))
 
   
   for(j in 1:length(N)){
-    dir.create( paste(wd, "/simulation",N[j],"/", sep="") )
+    dir.create( paste(wd, "/Output/simulation",N[j],"/", sep="") )
     
   } 
 
 for(j in 1:length(N)){
 for (i in 1:length(modelos)){
   
-  dir.create( paste(wd, "/simulation",N[j],"/", modelos[i], sep="") )  
+  dir.create( paste(wd, "/Output/simulation",N[j],"/", modelos[i], sep="") )  
 }
 }
 
@@ -48,31 +56,30 @@ beta6 =   1
 #varp=c(beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8)
 varp=c(beta1,beta2,beta3,beta4,beta5,beta6)
 lime = 10
-
 N<-c(200,400,600,800,1000)
-
 replica <- 1000
+
 tempo_inicial = proc.time()
-for (j in 1:5){
+
+set.seed(13)
+for (j in 1:length(N)){
   tempo_inicial = proc.time()
+  
   for(iteracao in 1:replica){
   y=rnorm(N[j],0,1)
   tp = model(N[j],varp)
   tM = max(tp[tp<+Inf])
-  #Z=runif(N[j],0,tM) #tempos at? a censura
-  Z=rgamma(N[j], shape=0.25, scale = 128.2) #tempos at? a censura
+  #Z=runif(N[j],0,tM) #time until failure
+  Z=rgamma(N[j], shape=0.25, scale = 128.2) #time until censor
   
-  time=numeric()
-  delta=numeric()
-  gamma=numeric()
+  time=numeric(); delta=numeric(); gamma=numeric()
   
   for (i in 1:N[j]){
-    
-    time[i] = min(tp[i],Z[i]) #tempo observado (m?nimo entre os tempos de falha e censura)
+    time[i] = min(tp[i],Z[i]) #observed time (minimum between failure time and censor)
   
     
     if (time[i] < Z[i]){
-      delta[i]=1          #delta: indicadora de falha e censura
+      delta[i]=1          #delta: indicative for failure and censor
     } else {delta[i]=0}
     
     if (time[i]==0){
@@ -81,24 +88,25 @@ for (j in 1:5){
   
     }
     
-  t<-time  #tempo observado
-  d<-delta #indicadora de falha e censura
-  x<-y     #covari?vel
-  z<-gamma #indicadora dos zeros
+  t<-time  #Observed time;
+  d<-delta #Indicative for failure and cens
+  x<-y     #covariable
+  z<-gamma #Zero indicative
   
   dados <- cbind(t,d,z,x)
   
   data.labels <- paste("dados",1:replica, ".txt", sep="")
-  
-  
-  wd.dados <- paste(wd, "/simulation",N[j],"/dados_No_p1",sep="")
+ 
+  wd.dados <- paste(wd, "/Output/simulation",N[j],"/dados_No_p1",sep="")
   
   data.local  <- file.path(wd.dados, data.labels[iteracao])
-  
-  
+ 
   write.table(dados, file = data.local, row.names=FALSE, col.names=TRUE, append=FALSE)
  }
 }
+
+
+
 
 ###--------------------------------------------------------------------------------------------###
 # Monte Carlo Study
@@ -109,43 +117,41 @@ replica <- 1000
 continue <- TRUE
 
 for (j in 1:5){
-  cat("\n\n Sample: ", N[j], "\n")
-for(iteracao in 1:replica){ 
+cat("\n\n Sample: ", N[j], "\n")
+ for(iteracao in 1:replica){ 
 	
- tempo_inicial = proc.time()
- cat("\n\n Replica: ", iteracao, "\n")  
- data.labels <- paste("dados",1:replica, ".txt", sep="")   
- 
- wd.dados <- paste(wd, "/simulation",N[j],"/dados_No_p1",sep="")
- data.name <- data.labels[iteracao]
- data.local  <- file.path(wd.dados,data.name)
- dados <- read.table(data.local, head=TRUE)
- 
- time<-dados$t
- delta<-dados$d
- y<-dados$x
- 
- #varp=c(beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8)
- varp=c(beta1,beta2,beta3,beta4,beta5,beta6)
- 
- fit=try(optim(varp,GPE,method="BFGS",hessian=TRUE,control=list(fnscale=-1)))
- estc = try(fit$par)
- Hc=try(fit$hessian); varic=try(-solve(Hc))
- 
- 
- 
- 
- for(i in 1:length(nomes)){
+   tempo_inicial = proc.time()
+   cat("\n\n Iteraction: ", iteracao, "\n")  
+   data.labels <- paste("dados",1:replica, ".txt", sep="")   
    
-   dir.create( paste(wd, "/simulation",N[j],"/modelos_No_p1/", nomes[i], sep="") )
-   wd.sim<-paste(wd,"/simulation",N[j],"/modelos_No_p1/", nomes[i], sep="")
+   wd.dados <- paste(wd, "/Output/simulation",N[j],"/dados_No_p1",sep="")
+   data.name <- data.labels[iteracao]
+   data.local  <- file.path(wd.dados,data.name)
+   dados <- read.table(data.local, head=TRUE)
    
+   time<-dados$t
+   delta<-dados$d
+   y<-dados$x
    
-   param_Weibull<- file.path(wd.sim[1], "param_Weibull.txt") 
+   #varp=c(beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8)
+   varp=c(beta1,beta2,beta3,beta4,beta5,beta6)
    
-   Erro_Weibull <- file.path(wd.sim[1], "Erro_Weibull.txt")
-   
- }
+   fit=try(optim(varp,GPE,method="BFGS",hessian=TRUE,control=list(fnscale=-1)))
+   estc = try(fit$par)
+   Hc=try(fit$hessian); varic=try(-solve(Hc))
+ 
+ 
+     for(i in 1:length(nomes)){
+     
+       dir.create( paste(wd, "/Output/simulation",N[j],"/modelos_No_p1/", nomes[i], sep="") )
+       wd.sim<-paste(wd,"/Output/simulation",N[j],"/modelos_No_p1/", nomes[i], sep="")
+       
+       
+       param_Weibull<- file.path(wd.sim[1], "param_Weibull.txt") 
+       
+       Erro_Weibull <- file.path(wd.sim[1], "Erro_Weibull.txt")
+       
+     }
  
  
  
@@ -179,8 +185,8 @@ for(iteracao in 1:replica){
 
 
 
-##Modelo gamma
-library(flexsurv)
+##Gamma model
+
 replica<-1000
 N<-c(200,400,600,800,1000)
 
@@ -189,10 +195,10 @@ for (j in 1:length(N)){
   for(iteracao in 1:replica){ 
     
     tempo_inicial = proc.time()
-    cat("\n\n Replica: ", iteracao, "\n")  
+    cat("\n\n iteraction: ", iteracao, "\n")  
     data.labels <- paste("dados",1:replica, ".txt", sep="")   
     
-    wd.dados <- paste(wd, "/simulation",N[j],"/dados_No_p1",sep="")
+    wd.dados <- paste(wd, "/Output/simulation",N[j],"/dados_No_p1",sep="")
     data.name <- data.labels[iteracao]
     data.local  <- file.path(wd.dados,data.name)
     dados <- read.table(data.local, head=TRUE)
@@ -205,7 +211,7 @@ for (j in 1:length(N)){
       
       varic=try(solve(c$opt$hessian))
       
-      wd.sim<-paste(wd,"/simulation",N[j],"/modelos_No_p1/", 'gamma', sep="")  
+      wd.sim<-paste(wd,"/Output/simulation",N[j],"/modelos_No_p1/", 'gamma', sep="")  
       param_Gamma<- file.path(wd.sim, "param_Gamma.txt") 
       Erro_Gamma <- file.path(wd.sim, "Erro_Gamma.txt")
       
@@ -214,3 +220,5 @@ for (j in 1:length(N)){
   }
 
 }
+
+source("fit_model_Weibull_No_p1_graficos_ggplot2.r",local=TRUE)

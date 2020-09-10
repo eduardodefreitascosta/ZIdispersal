@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+*.docx
+*.txt
+Figures/
+Latex_files/
+Paper/
+ZI_weibull_ref/
+Figure/
+Output/

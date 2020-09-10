@@ -1,27 +1,50 @@
+
 set.seed(13)
+
+if(!require(knitr)){install.packages("knitr")
+  
+}
 library(knitr)
+
+
+if(!require(ggplot2)){install.packages("ggplot2")
+  
+}
 library(ggplot2)
+
+if(!require(survival)){install.packages("sirvival")
+  
+}
+
+require(survival)
+
+
+if(!require(flexsurv)){install.packages("flexsurv")
+  
+}
+
+library(flexsurv)
 
 
 #Sample size
 n <- 400
 
 
-#Criando sexo
+#Creating sex
 z<- rep(1,n/2) 
 w<-rep(0,n/2)
 x1<-  c(z,w)
   
-#Criando idades em meses
+#Creating age in monts
 age_fem<-rexp(n/2,1/12)
 age_mac<-rexp(n/2,1/15)
 ages<-c(age_fem,age_mac)
   
-# Criando distancias, zero e censura. 
+# Crianting distances, zero and censure. 
 zer<- (exp(-1.5 - 0.02*(ages) + 0.2*x1))/(1+exp(-1.5 - 0.02*(ages) + 0.2*x1))  #Probabilidade de ser zero
 
 
-alpha.t <- 1 #faz com que fique exponencial
+alpha.t <- 1 #makes exponential
 lambda.t <- 0.1
 
 #fem
@@ -33,7 +56,7 @@ for(i in 1:(n/2)){
   y_fem_auxi[i] <- (-log(u[i])/gamma.t[i])^(1/alpha.t) 
 }
 
-y_fem <- y_fem_auxi*(1-rbinom(200,1,zer[1:200]))  #Distancias para femeas
+y_fem <- y_fem_auxi*(1-rbinom(200,1,zer[1:200]))  #Distances for females
 
 summary(y_fem)
 hist(y_fem)
@@ -47,7 +70,7 @@ for(i in 1:(n/2)){
   y_mac_auxi[i] <- (-log(u[i])/gamma.t[i])^(1/alpha.t) 
 }
 
-y_mac <- y_mac_auxi*(1-rbinom(200,1,zer[201:400])) #Distancias para machos
+y_mac <- y_mac_auxi*(1-rbinom(200,1,zer[201:400])) #Distances for males
 
 summary(y_mac)
 hist(y_mac)
@@ -60,39 +83,38 @@ t <- NULL
 delta <- NULL
 Z <- NULL
 for (i in 1:n){ 
-    t[i] = min(y[i],c[i]) #tempo observado (minimo entre os tempos de falha e censura)
+    t[i] = min(y[i],c[i]) #observed distance (minimum between failure and cens)
   
       if (t[i] < c[i]){
-        delta[i]=1          #delta: indicadora de falha e censura
+        delta[i]=1          #delta: indicative of failures and cens
       } else {delta[i]=0}
   
-      if (t[i] == 0){ #Z: indicadora de zero
+      if (t[i] == 0){ #Z: zero inticative
         Z[i]=1
       }else{Z[i]=0}
   }
    
-#Criando data frame
+#Creating dataframe
 data <- as.data.frame(cbind(t,Z,delta, ages,x1))
 names(data) <- c("dist","zero","delta","age", "sex")  
 
-#percentual de eventos
+#percentage of events
 sum(data$delta)/n
 #[1] 0.9725
 
-#percentual de zeros
+#percentage of zeros
 sum(data$zero)/n
 #[1] 0.2375
 
-require(survival)
 plot(Surv(data$dist,delta))
 
 
 ##################
-#Resumo dos dados#
+#Data summary    #
 ##################
 
 tabela<-cbind(
-  #Dist?ncia media geral e por sexo
+  #General mean distande and per sex
   rbind(
     mean(data$dist[data$sex==0]), # geral para machos
     mean(data$dist[data$sex==0&data$age<15]), #Machos <16
@@ -102,25 +124,25 @@ tabela<-cbind(
     mean(data$dist[data$sex==1&data$age>12]) #Femeas >16
   ),
   
-  # %zeros media geral e por sexo
+  # %zeros general mean and per sex
   rbind(
-    mean(data$zero[data$sex==0]), # geral para machos
-    mean(data$zero[data$sex==0&data$age<15]), #Machos <16
-    mean(data$zero[data$sex==0&data$age>15]), #Machos >16
-    mean(data$zero[data$sex==1]), # geral para femeas
-    mean(data$zero[data$sex==1&data$age<12]), #Femeas <16
-    mean(data$zero[data$sex==1&data$age>12]) #Femeas >16
+    mean(data$zero[data$sex==0]), # general for males
+    mean(data$zero[data$sex==0&data$age<15]), #males <16
+    mean(data$zero[data$sex==0&data$age>15]), #males >16
+    mean(data$zero[data$sex==1]), # general for females
+    mean(data$zero[data$sex==1&data$age<12]), #females <16
+    mean(data$zero[data$sex==1&data$age>12]) #females >16
   ),
   
   
-  #% censura media geral e por sexo
+  #% General mean censoriing and per sex
   rbind(
-    mean(data$delta[data$sex==0]), # geral para machos
-    mean(data$delta[data$sex==0&data$age<15]), #Machos <16
-    mean(data$delta[data$sex==0&data$age>15]), #Machos >16
-    mean(data$delta[data$sex==1]), # geral para femeas
-    mean(data$delta[data$sex==1&data$age<12]), #Femeas <16
-    mean(data$delta[data$sex==1&data$age>12]) #Femeas >16
+    mean(data$delta[data$sex==0]), # general for males
+    mean(data$delta[data$sex==0&data$age<15]), #males <16
+    mean(data$delta[data$sex==0&data$age>15]), #males >16
+    mean(data$delta[data$sex==1]), # general for females
+    mean(data$delta[data$sex==1&data$age<12]), #Females <16
+    mean(data$delta[data$sex==1&data$age>12]) #Females >16
   )
   
 )
@@ -134,14 +156,16 @@ hist(data$dist[data$sex==1],main="Histogram of distance for females",xlab="Dista
 hist(data$dist[data$sex==0],main="Histogram of distance for males",xlab="Distance")
 
 data$Sex<-c(rep("Female",200),rep("Male",200))
-p<-ggplot(data, aes(x=dist))+
+
+tiff(file=paste(wd,"/Figures","/dist_hist.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+ggplot(data, aes(x=dist))+
   geom_histogram(color="black", fill="white")+
   facet_grid(Sex ~ .)+
   labs(x ="Distance (Km)", y = "Frequency")
-p
+dev.off()
 
 ##################
-# Modelo Weibull #
+# Weibull model  #
 ##################
 
 
@@ -166,10 +190,10 @@ GPE=function(varp)
 }
 
 
-# chute inicial 
+# initial value
 varp=rep(0,9)
 
-#dados observados
+#observed data
 x1    <- (data$age)
 x2    <- data$sex
 time  <- data$dist
@@ -184,22 +208,19 @@ Hc=try(fit$hessian); varic=try(-solve(Hc))
 cbind(estc,sqrt(diag(varic)),estc-1.96*sqrt(diag(varic)),estc+1.96*sqrt(diag(varic)))
 
 
-
-#Modelo Gamma
-#############
-
-library(flexsurv)
-
+##############
+#Gamma model #
+##############
 
 summary(glm(data$zero ~ (data$age)+data$sex,family=binomial(link='logit'))->a)
 
 b<-flexsurvreg(Surv(data$dist, data$delta,type='right')~(data$age)+data$sex,dist="gamma",subset = data$zer==0)
 
 
-##Media modelo Weibull
+##Mean weibull model
 
-#Distancia esperada 
-#x=age; y=sex{1=femea, 0=macho}
+#Expected distance
+#x=age; y=sex{1=female, 0=male}
 
 mw1<-function(x,y){
   p0<-(exp(estc[7]+estc[8]*x+estc[9]*y)/(1+exp(estc[7]+estc[8]*x+estc[9]*y)))
@@ -208,15 +229,15 @@ mw1<-function(x,y){
   mw1 <- (1-p0)*theta*gamma(1+1/alpha)
   mw1
 }
-#femeas
+#female
 mw1(12,1)
-#machos
+#male
 mw1(15,0)
 
 
-###Media modelo gamma
-#Distancia esperada 
-#x=age; y=sex{1=femea, 0=macho}
+###Mean distance gamma
+#Expected distance 
+#x=age; y=sex{1=female, 0=male}
 
 mg1<-function(x,y){
   scale.1<-( ((b$res[2]))*exp(b$res[3]*x+b$res[4]*y))
@@ -224,9 +245,9 @@ mg1<-function(x,y){
   mg1<-(1-p)*b$res[1]*(1/scale.1)
   mg1
 }
-#femeas
+#female
 mg1(12,1)
-#machos
+#male
 mg1(15,0)
 
 
@@ -254,17 +275,20 @@ Regression<-c(rep("ZIWeibull",length(dom)*2),rep("ZIGamma",length(dom)*2))
 
 media2 = data.frame(Scaled_Age=c(dom,dom,dom,dom),media.1=media,Sex=Sex,grupo=Regression)
 
+
+tiff(file=paste(wd,"/Figures","/mean_distance.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+par(xpd=NA)
 ggplot(data=media2, aes(x = Scaled_Age, y = media.1, group=Sex)) +
-#  geom_point(show.legend=FALSE, shape = 10) +
+  #  geom_point(show.legend=FALSE, shape = 10) +
   geom_line(aes(linetype = Sex)) +
   ylim(c(0,max(mw1(dom,0)))) +
   labs(y = "Mean Distance Km", x = "Age in month")+
   guides(fill=guide_legend("Regression"))+
   scale_color_discrete(name = "Regression")+
   facet_grid(grupo~.)
+dev.off()
 
-
-#testes de hipoteses weibull
+#Hypothesis test weibull
 betas_weibull=estc
 SE_weibull=sqrt(diag(varic))
 wald_weibull=betas_weibull^2/SE_weibull^2
@@ -272,14 +296,14 @@ pchisq(wald_weibull,1,lower.tail = F)
 Lic=betas_weibull-1.96*SE_weibull
 Uic=betas_weibull+1.96*SE_weibull
 
-#testes de hipoteses gamma
+#Hypothesis test gamma
 betas_gamma=b$res[,1]
 SE_gamma=b$res[,4]
 wald_gamma = betas_gamma^2/SE_gamma^2
 pchisq(wald_gamma,1,lower.tail = F)
 
 
-##Criterios de informacao
+##Information criteria
 
 AIC_gamma=(2*7)-2*(logLik(b)+logLik(a))
 AIC_weibull=(2*9)-2*fit$value
@@ -296,7 +320,7 @@ BIC_gamma
 BIC_weibull
 
 
-##Modelo linear
+##Linear model
 
 hist(data$dist[data$zero==0 & data$delta==1])
 

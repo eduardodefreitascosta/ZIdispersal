@@ -4,11 +4,23 @@
 ###--------------------------------------------------------------------------------------------###
 rm(list=ls(all=TRUE)) 
 
-#wd <- setwd("C:\\Users\\Usuario\\Dropbox\\Simulacao_nova")
+if(!require(ggplot2)){install.packages("ggplot2")
+  }
+library(ggplot2)
+
+if(!require(tidyr)){install.packages("tidyr")
+  }
+library(tidyr)
+
+if(!require(gridExtra)){install.packages("gridExtra")
+  }
+library(gridExtra)
+
 wd <- getwd()
 
 set.seed(123456)
 
+dir.create(paste(wd,"/Figure",sep=""))
 
 source("function_Weibull_No_p1.r",local=TRUE)
 
@@ -55,11 +67,11 @@ samp<-c(200,400,600,800,1000)
 
 #Params
 
-betas200 <- read.table(paste(wd,'/','simulation',N[1],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
-betas400 <- read.table(paste(wd,'/','simulation',N[2],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
-betas600 <- read.table(paste(wd,'/','simulation',N[3],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
-betas800 <- read.table(paste(wd,'/','simulation',N[4],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
-betas1000 <- read.table(paste(wd,'/','simulation',N[5],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
+betas200 <- read.table(paste(wd,'/','/Output/simulation',N[1],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
+betas400 <- read.table(paste(wd,'/','/Output/simulation',N[2],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
+betas600 <- read.table(paste(wd,'/','/Output/simulation',N[3],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
+betas800 <- read.table(paste(wd,'/','/Output/simulation',N[4],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
+betas1000 <- read.table(paste(wd,'/','/Output/simulation',N[5],'/','modelos_No_p1/weibull/param_Weibull.txt',sep=''))
 betas<-cbind(apply(betas200[,1:6],2,mean),
              apply(betas400[,1:6],2,mean),
              apply(betas600[,1:6],2,mean),
@@ -80,11 +92,11 @@ variancia<-cbind(apply(betas200[,1:6],2,var),
            apply(betas800[,1:6],2,var),
            apply(betas1000[,1:6],2,var))
 
-var200 <- read.table(paste(wd,"/simulation200/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
-var400 <- read.table(paste(wd,"/simulation400/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
-var600 <- read.table(paste(wd,"/simulation600/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
-var800 <- read.table(paste(wd,"/simulation800/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
-var1000 <- read.table(paste(wd,"/simulation1000/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
+var200 <- read.table(paste(wd,"/Output/simulation200/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
+var400 <- read.table(paste(wd,"/Output/simulation400/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
+var600 <- read.table(paste(wd,"/Output/simulation600/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
+var800 <- read.table(paste(wd,"/Output/simulation800/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
+var1000 <- read.table(paste(wd,"/Output/simulation1000/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
 
 vars<-cbind(apply(var200[,1:6],2,mean),
             apply(var400[,1:6],2,mean),
@@ -96,9 +108,6 @@ eqm<-(vies^2+variancia)
 
 
 #Plots
-
-library(ggplot2)
-library(tidyr)
 
 vies1 = t(vies)
 vies1 = data.frame(vies1)
@@ -134,10 +143,9 @@ f <- ggplot(data = vies1, aes(x = samp, y = V6)) +
   geom_line(linetype = 2) +
   labs(y = expression(paste("BIAS ( ", hat(beta)[6], " )")), x = "Sample")
 
+tiff(file=paste(wd,"/Figure","/beta_bias.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 gridExtra::grid.arrange(a,b,c,d,e,f,nrow=3)
-
-
-
+dev.off()
 
 rownames(vars) = c("Z1","Z2","Z3","Z4","Z5","Z6") 
 vars1 = t(vars)
@@ -174,8 +182,9 @@ f2 <- ggplot(data = vars1, aes(x = samp, y = Z6)) +
   geom_line(linetype = 2) +
   labs(y = expression(paste("VAR ( ", hat(beta)[6], " )")), x = "Sample")
 
+tiff(file=paste(wd,"/Figure","/beta_var.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 gridExtra::grid.arrange(a2,b2,c2,d2,e2,f2,nrow=3)
-
+dev.off()
 
 
 #Plots
@@ -222,45 +231,45 @@ f3 <- ggplot(data = betas1, aes(x = samp, y = W6)) +
   labs(y = expression(paste("Mean (",hat(beta)[6],")" )), x = "Sample Size")
 
 
-library(gridExtra)
+tiff(file=paste(wd,"/Figure","/beta_mean.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 grid.arrange(arrangeGrob(a3,b3, ncol=2), 
                         arrangeGrob(c3,d3, ncol=2),
                         arrangeGrob(e3,f3, ncol=2), ncol=1)
 
+dev.off()
 
 
-
-#Modelo gamma
+#Gamma model
 
 ##Graphics
-gammas200 <- read.table(paste(wd,'/','simulation',N[1],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas400 <- read.table(paste(wd,'/','simulation',N[2],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas600 <- read.table(paste(wd,'/','simulation',N[3],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas800 <- read.table(paste(wd,'/','simulation',N[4],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas1000 <- read.table(paste(wd,'/','simulation',N[5],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
+gammas200 <- read.table(paste(wd,'/','Output/simulation',N[1],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
+gammas400 <- read.table(paste(wd,'/','Output/simulation',N[2],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
+gammas600 <- read.table(paste(wd,'/','Output/simulation',N[3],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
+gammas800 <- read.table(paste(wd,'/','Output/simulation',N[4],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
+gammas1000 <- read.table(paste(wd,'/','Output/simulation',N[5],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
 
-#Fazendo as medias dos parametros exponencializados
+#exp means
 gammas<-cbind(apply(cbind((gammas200[,3:4]),gammas200[,5]),2,mean),
               apply(cbind((gammas400[,3:4]),gammas400[,5]),2,mean),
               apply(cbind((gammas600[,3:4]),gammas600[,5]),2,mean),
               apply(cbind((gammas800[,3:4]),gammas800[,5]),2,mean),
               apply(cbind((gammas1000[,3:4]),gammas1000[,5]),2,mean))
 
-#Fazendo as  medias dos parametros da parte logistica
+#means logistic part
 logis<-cbind(apply((gammas200[,1:2]),2,mean),
              apply((gammas400[,1:2]),2,mean),
              apply((gammas600[,1:2]),2,mean),
              apply((gammas800[,1:2]),2,mean),
              apply((gammas1000[,1:2]),2,mean))
 
-#Fazendo os SD dos parametros exponencializados
+#SD of the parameters (exp)
 gdps<-cbind(apply(cbind((gammas200[,3:4]),gammas200[,5]),2,sd),
             apply(cbind((gammas400[,3:4]),gammas400[,5]),2,sd),
             apply(cbind((gammas600[,3:4]),gammas600[,5]),2,sd),
             apply(cbind((gammas800[,3:4]),gammas800[,5]),2,sd),
             apply(cbind((gammas1000[,3:4]),gammas1000[,5]),2,sd))
 
-#Fazendo os SD dos parametros da parte logistica
+#SD of parameters logistic part
 dpsg<-cbind(apply(gammas200[,1:2],2,sd),
             apply(gammas400[,1:2],2,sd),
             apply(gammas600[,1:2],2,sd),
@@ -268,7 +277,7 @@ dpsg<-cbind(apply(gammas200[,1:2],2,sd),
             apply(gammas1000[,1:2],2,sd))
 
 
-#Variancia 
+#Variance
 varianciag<-cbind(apply((gammas200[,1:2]),2,var),
                   apply((gammas400[,1:2]),2,var),
                   apply((gammas600[,1:2]),2,var),
@@ -282,13 +291,13 @@ eqmg<-viesg^2+varianciag
 samp<-c(200,400,600,800,1000)
 
 
-varg200 <- read.table(paste(wd,"/simulation200/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg400 <- read.table(paste(wd,"/simulation400/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg600 <- read.table(paste(wd,"/simulation600/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg800 <- read.table(paste(wd,"/simulation800/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg1000 <- read.table(paste(wd,"/simulation1000/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
+varg200 <- read.table(paste(wd,"/Output/simulation200/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
+varg400 <- read.table(paste(wd,"/Output/simulation400/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
+varg600 <- read.table(paste(wd,"/Output/simulation600/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
+varg800 <- read.table(paste(wd,"/Output/simulation800/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
+varg1000 <- read.table(paste(wd,"/Output/simulation1000/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
 
-#Fazendo a média das variancias dos parametros da parte logistica
+#Mean variance logistic part
 varsg<-cbind(apply((varg200[,1:2]),2,mean),
              apply((varg400[,1:2]),2,mean),
              apply((varg600[,1:2]),2,mean),
@@ -303,7 +312,7 @@ varsg1<-cbind(apply(sqrt(varg200[,1:2]),2,mean),
 
 
 
-#Teorica E(t|x=)
+#Theoretic E(t|x=)
 media<-function(x){
   alfa=exp(beta1+beta2*x)
   teta=exp(beta3+beta4*x)
@@ -360,32 +369,36 @@ mediaw(1),
 mediag(1))
 
 
-##Grafico de medias
-media2 = data.frame(samp=samp,media.1=c(media1,mediag),grupo=c(rep("ZIWeibull",5),rep("ZIGamma",5)))
+##Mean time plots
+#media2 = data.frame(samp=samp,c(mediaw(-1)[1,],
+#                    mediag(-1)[1,],
+#                    mediaw(1)[1,],
+#                    mediag(1)[1,])
+#,grupo=c(rep("ZIWeibull",5),rep("ZIGamma",5)))
 
-ggplot(data=media2, aes(x = samp, y = media.1, group=grupo)) +
-  geom_point(show.legend=FALSE, shape = 16) +
-  geom_line(aes(linetype = grupo)) +
-  geom_hline(yintercept = media) +
-  ylim(c(24,27.5)) +
-  labs(y = "Mean Time", x = "Sample Size")+
-  guides(fill=guide_legend("Regression"))+
-  scale_color_discrete(name = "Regression")
+#ggplot(data=media2, aes(x = samp, y = media.1, group=grupo)) +
+#  geom_point(show.legend=FALSE, shape = 16) +
+#  geom_line(aes(linetype = grupo)) +
+#  geom_hline(yintercept = media) +
+#  ylim(c(24,27.5)) +
+#  labs(y = "Mean Time", x = "Sample Size")+
+#  guides(fill=guide_legend("Regression"))+
+#  scale_color_discrete(name = "Regression")
 
-#Grafico de po
+#Graph of p_o
 
-po2=data.frame(pos=c(po,po1),samp=samp,grupo=c(rep("ZIWeibull",5),rep("ZIGamma",5)))
-
-
-ggplot(data = po2, aes(x = samp, y = pos, group=grupo)) +
-  geom_point(show.legend=FALSE, shape = 16) +
-  geom_line(aes(linetype = grupo)) +
-  geom_hline(yintercept = p0) +
-  ylim(c(min(pos),0.1195)) +
-  labs(y = "Mean Time", x = "Sample Size")
+#po2=data.frame(pos=c(po,po1),samp=samp,grupo=c(rep("ZIWeibull",5),rep("ZIGamma",5)))
 
 
-#Grafico de betas da logistica
+#ggplot(data = po2, aes(x = samp, y = pos, group=grupo)) +
+#  geom_point(show.legend=FALSE, shape = 16) +
+#  geom_line(aes(linetype = grupo)) +
+#  geom_hline(yintercept = p0) +
+#  ylim(c(min(pos),0.1195)) +
+#  labs(y = "Mean Time", x = "Sample Size")
+
+
+#Plots of betas parameters from logistic
 
 logi<-data.frame(w1=logis[1,],w2=logis[2,],w3=logis[1,]-beta5,w4=logis[2,]-beta6,w5=varianciag[1,],w6=varianciag[2,],samp=samp)
 
@@ -421,18 +434,17 @@ l6 <- ggplot(data = logi, aes(x = samp, y = w6)) +
   geom_line(linetype = 2) +
   labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample")
 
-
-library(gridExtra)
+tiff(file=paste(wd,"/Figure","/param_logistic.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 grid.arrange(arrangeGrob(l1,l2,l3,l4,l5,l6, ncol=2))
-
+dev.off()
 
 # --------------------------------------------------------------------------------- #
 
-###Tabelas
+###Tables
 
-##Parte Weibull
+##Weibull part
 
-##Probabilidade de cobertura
+##Cover probability
 
 betas200e <- betas200[,1:6]
 betas400e <- betas400[,1:6]
@@ -552,11 +564,11 @@ final1
 
 
 
-##Parte Gamma
+##Gamma part
 
 estg <- c(-3, 1)
 
-#Criando uma nova matriz que pega apenas os dados gerados para beta_0 e beta_1 (colunas 1 e 2)
+#MAtrix only for beta_0 e beta_1 (col 1 e 2)
 gammas200e <- gammas200[,1:2]
 gammas400e <- gammas400[,1:2]
 gammas600e <- gammas600[,1:2]
@@ -654,7 +666,7 @@ probcobg <- cbind(Prob_coberturag200,
                   Prob_coberturag1000)
 
 
-#Usaremos logis, que é a matriz que ja faz as medias dos parametros da parte logistica
+#We will use the logis, which is the matrix with the mean of the parameters from the logistic part
 
 tabg200<-cbind(logis[,1],cbind(logis[,1]-1.96*sqrt(varianciag[,1]),logis[,1]+1.96*sqrt(varianciag[,1])),dpsg[,1],varsg[,1],viesg[,1],eqmg[,1],probcobg[,1])
 row.names(tabg200)<-c(1,2)
@@ -675,7 +687,3 @@ final<-rbind(tabg200,tabg400,tabg600,tabg800,tabg1000)
 row.names(final)<-rep(c("beta_0", "beta_1"),5)
 colnames(final)<-c("media","LCI","UCI","SD of betas","Mean Std Err","vies","eqmg","CP")
 final
-
-
-
-#Tabela de medias e p0
