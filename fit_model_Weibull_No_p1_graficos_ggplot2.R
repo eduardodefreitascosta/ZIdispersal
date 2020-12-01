@@ -116,32 +116,32 @@ attach(vies1)
 a <- ggplot(data = vies1, aes(x = samp, y = V1)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[1], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[1], " )")), x = "Sample Size")
 
 b <- ggplot(data = vies1, aes(x = samp, y = V2)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[2], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[2], " )")), x = "Sample Size")
 
 c <- ggplot(data = vies1, aes(x = samp, y = V3)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[3], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[3], " )")), x = "Sample Size")
 
 d <- ggplot(data = vies1, aes(x = samp, y = V4)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[4], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[4], " )")), x = "Sample Size")
 
 e <- ggplot(data = vies1, aes(x = samp, y = V5)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[5], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[5], " )")), x = "Sample Size")
 
 f <- ggplot(data = vies1, aes(x = samp, y = V6)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[6], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[6], " )")), x = "Sample Size")
 
 tiff(file=paste(wd,"/Figure","/beta_bias.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 gridExtra::grid.arrange(a,b,c,d,e,f,nrow=3)
@@ -155,32 +155,32 @@ attach(vars1)
 a2 <- ggplot(data = vars1, aes(x = samp, y = Z1)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample Size")
 
 b2 <- ggplot(data = vars1, aes(x = samp, y = Z2)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[2], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[2], " )")), x = "Sample Size")
 
 c2 <- ggplot(data = vars1, aes(x = samp, y = Z3)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[3], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[3], " )")), x = "Sample Size")
 
 d2 <- ggplot(data = vars1, aes(x = samp, y = Z4)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[4], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[4], " )")), x = "Sample Size")
 
 e2 <- ggplot(data = vars1, aes(x = samp, y = Z5)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[5], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[5], " )")), x = "Sample Size")
 
 f2 <- ggplot(data = vars1, aes(x = samp, y = Z6)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[6], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[6], " )")), x = "Sample Size")
 
 tiff(file=paste(wd,"/Figure","/beta_var.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 gridExtra::grid.arrange(a2,b2,c2,d2,e2,f2,nrow=3)
@@ -417,22 +417,22 @@ l2 <- ggplot(data = logi, aes(x = samp, y = w2)) +
 l3 <- ggplot(data = logi, aes(x = samp, y = w5)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[0], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[0], " )")), x = "Sample Size")
 
 l4 <- ggplot(data = logi, aes(x = samp, y = w4)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[1], " )")), x = "Sample")
+  labs(y = expression(paste("BIAS ( ", hat(beta)[1], " )")), x = "Sample Size")
 
 l5 <- ggplot(data = logi, aes(x = samp, y = w5)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[0], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[0], " )")), x = "Sample Size")
 
 l6 <- ggplot(data = logi, aes(x = samp, y = w6)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample")
+  labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample Size")
 
 tiff(file=paste(wd,"/Figure","/param_logistic.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 grid.arrange(arrangeGrob(l1,l2,l3,l4,l5,l6, ncol=2))
