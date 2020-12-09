@@ -42,9 +42,8 @@ ZIgamma(ze,t,d,data,co=c())
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
- \item{flexsurvreg}
- \item{Surv}
- \item{glm}
+ \item{}
+
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
