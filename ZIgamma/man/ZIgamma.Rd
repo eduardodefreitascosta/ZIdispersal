@@ -4,7 +4,7 @@
 \title{ZIgamma
 %%  ~~function to do ... ~~
 }
-\description{
+\description{This is a package to run a zero-inflated-censored dispersal distances regrssion. It uses a logistic and a gamma regressions to accomodate zeros and cenrored dispersal distances.
   Regression
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
@@ -13,8 +13,16 @@ ZIgamma(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
+  \item{ze}{Indicative variabel for zero dispersal
+  \item{t}{Dispersal distance variable
+  \item{d}{Indicative variable for censured dispersal
+  \item{data}{Dataset to be analysed
+  \item{co}{ It is a string vector containg the names of covariates to be included in the model
 %%     ~~Describe \code{x} here~~
+}
+}
+}
+}
 }
 }
 \details{
@@ -40,15 +48,18 @@ ZIgamma(x)
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
+ \item{flexsurvreg}
+ \item{Surv}
+ \item{glm}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+##---- Codes for the dispersal of wild boar ----
+##-- ==>  read the data wild_boar,
 
-## The function is currently defined as
-function (x)
+## Run
+ZIgamma(ze=zero,t=dist,d=delta,data=wild_boar,co=c("age","sex"))
+
 {
   }
 }
