@@ -2,13 +2,21 @@
 # The estimation steps follow the sequence outlined in the paper about dependent censoring, 
 # for Weibull adjustment.
 ###--------------------------------------------------------------------------------------------###
+
 rm(list=ls(all=TRUE)) 
 
+#Packages to be used
+packages<-c("readxl","here","tidyverse","ggplot2","flexsurv","knitr","glmmsr","plotly","gridExtra","grid","ggridges","ggthemes","summarytools","ggcorrplot")
 
-if (!require(flexsurv)){
-  install.packages("flexsurv")
+
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
 }
-library(flexsurv)
+
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
 
 
 wd <- getwd()
@@ -207,7 +215,8 @@ for (j in 1:length(N)){
     
       a<-glm(dados$z ~ dados$x,family=binomial(link='logit'))
       b<-summary(a)
-      c<-flexsurvreg(Surv(dados$t, dados$d,type='right')~dados$x,dist="gamma",subset=dados$z==0, method="Nelder-Mead",control=list(fnscale = 250000),integ.opts = list(rel.tol=1e-8))
+      c<-flexsurvreg(Surv(dados$t, dados$d,type='right')~dados$x,dist="gamma",subset=dados$z==0, 
+                     method="Nelder-Mead",control=list(fnscale = 250000),integ.opts = list(rel.tol=1e-8))
       
       varic=try(solve(c$opt$hessian))
       
