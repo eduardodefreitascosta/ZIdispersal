@@ -8,13 +8,30 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-ZIgamma(x)
+ZIgamma(ze,t,d,data,co=c())
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
+  \item{ze}{
+    Indicative variable for zero dispersal
 }
+  \item{t}{
+    Dispersal observed distance
+}
+
+  \item{d}{
+    Indicative variable for censored observation
+}
+
+  \item{data}{
+    Dataset with the data
+}
+
+  \item{co}{
+    A string with the names of the covariables used
+}
+
+
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
