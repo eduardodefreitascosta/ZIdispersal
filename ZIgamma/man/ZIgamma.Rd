@@ -16,7 +16,7 @@ ZIgamma(ze,t,d,data,co=c())
     Indicative variable for zero dispersal
 }
   \item{t}{
-    Dispersal observed distance
+    Dispersal observed distances
 }
 
   \item{d}{
