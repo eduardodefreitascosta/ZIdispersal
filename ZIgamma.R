@@ -17,8 +17,8 @@ ZIgamma<-function(ze,t,d,data,co=c()){
 
   # Packages loading
   invisible(lapply(packages, library, character.only = TRUE))
-  wild_boar <- readRDS(here("ZIgamma","wild_boar.rds"))
-
+  
+  if(length(co)!=0){
   a<-glm(ze~.,family=binomial(link='logit'),data=data_log)
 
   (fmla <- as.formula(paste("Surv(t,d,type='right') ~ ", paste(co, collapse= "+"))))
@@ -26,7 +26,17 @@ ZIgamma<-function(ze,t,d,data,co=c()){
   data_gamma<-(cbind.data.frame(t,d, data_log))
 
   b<-flexsurvreg(fmla,data=data_gamma,subset=t!=0,dist="gamma")
-
+  
+  }else{
+    a<-glm(ze~1,family=binomial(link='logit'),data=data_log)
+    
+    (fmla <- paste("Surv(t,d,type='right') ~ 1"))
+    
+    data_gamma<-(cbind.data.frame(t,d, data_log))
+    
+    b<-flexsurvreg(fmla,data=data_gamma,subset=t!=0,dist="gamma")
+   
+  }
 
 
   summa<-list(a,b)

@@ -34,19 +34,21 @@ ZIgamma(ze,t,d,data,co=c())
 
 }
 \details{
+Name of the variables in argument "co" must be equal to the dataset
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
+  \item{Logistic}{Output of the logistic model}
+  \item{Gamma}{Output of the gamma model}
 %% ...
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
+Eduardo, Silvana, Giulia, Taina, Mauro
 %%  ~~who you are~~
 }
 \note{
@@ -56,6 +58,7 @@ ZIgamma(ze,t,d,data,co=c())
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
+flexruvreg, glm
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
