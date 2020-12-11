@@ -2,27 +2,134 @@
 # The estimation steps follow the sequence outlined in the paper about dependent censoring, 
 # for Weibull adjustment.
 ###--------------------------------------------------------------------------------------------###
+
 rm(list=ls(all=TRUE)) 
 
-if(!require(ggplot2)){install.packages("ggplot2")
-  }
-library(ggplot2)
+#Packages to be used
+packages<-c("readxl","here","knitr","tidyverse","ggplot2","flexsurv","knitr","glmmsr","plotly","gridExtra","grid","ggridges","ggthemes","summarytools","ggcorrplot")
 
-if(!require(tidyr)){install.packages("tidyr")
-  }
-library(tidyr)
 
-if(!require(gridExtra)){install.packages("gridExtra")
-  }
-library(gridExtra)
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+
 
 wd <- getwd()
 
-set.seed(123456)
+set.seed(13)
 
-dir.create(paste(wd,"/Figure",sep=""))
+source(here("Scripts","function_Weibull_No_p1.r"),local=TRUE)
 
-source("function_Weibull_No_p1.r",local=TRUE)
+
+modelos <- c("dados_No_p1", "modelos_No_p1")
+N<-c(200,400,600,800,1000)
+
+
+#Set the covariates.
+#Set the first parameter scenario.
+beta1 = 0.5 
+beta2 = 0.5 
+beta3 = 1.5
+beta4 =   2
+beta5 =  -3
+beta6 =   1
+#beta7 =  -2
+#beta8 = 0.75
+#varp=c(beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8)
+varp=c(beta1,beta2,beta3,beta4,beta5,beta6)
+lime = 10
+N<-c(200,400,600,800,1000)
+replica <- 1000
+
+tempo_inicial = proc.time()
+
+
+
+
+
+###--------------------------------------------------------------------------------------------###
+# Monte Carlo Study
+###--------------------------------------------------------------------------------------------###
+nomes<-c("linear","gamma","weibull")
+N<-c(200,400,600,800,1000)
+replica <- 1000
+continue <- TRUE
+
+for (j in 1:5){
+cat("\n\n Sample: ", N[j], "\n")
+ for(iteracao in 1:replica){ 
+	
+   tempo_inicial = proc.time()
+   cat("\n\n Iteraction: ", iteracao, "\n")  
+   data.labels <- paste("dados",1:replica, ".txt", sep="")   
+   
+   wd.dados <- paste(wd, "/Output/simulation",N[j],"/dados_No_p1",sep="")
+   data.name <- data.labels[iteracao]
+   data.local  <- file.path(wd.dados,data.name)
+   dados <- read.table(data.local, head=TRUE)
+   
+   time<-dados$t
+   delta<-dados$d
+   y<-dados$x
+   
+   #varp=c(beta1,beta2,beta3,beta4,beta5,beta6,beta7,beta8)
+   varp=c(beta1,beta2,beta3,beta4,beta5,beta6)
+   
+   fit=try(optim(varp,GPE,method="BFGS",hessian=TRUE,control=list(fnscale=-1)))
+   estc = try(fit$par)
+   Hc=try(fit$hessian); varic=try(-solve(Hc))
+ 
+ 
+     for(i in 1:length(nomes)){
+     
+       dir.create( paste(wd, "/Output/simulation",N[j],"/modelos_No_p1/", nomes[i], sep="") )
+       wd.sim<-paste(wd,"/Output/simulation",N[j],"/modelos_No_p1/", nomes[i], sep="")
+       
+       
+       param_Weibull<- file.path(wd.sim[1], "param_Weibull.txt") 
+       
+       Erro_Weibull <- file.path(wd.sim[1], "Erro_Weibull.txt")
+       
+     }
+ 
+ 
+ 
+    if ( is.finite(estc[1]) & is.finite(estc[2]) & is.finite(estc[3]) & is.finite(estc[4]) & 
+          is.finite(estc[5]) & is.finite(estc[6])) {
+        if ( is.finite(varic[1,1]) & is.finite(varic[2,2]) & is.finite(varic[3,3]) & is.finite(varic[4,4]) & 
+            is.finite(varic[5,5]) & is.finite(varic[6,6]) ){
+          if ( varic[1,1] > 0 & varic[2,2] > 0 & varic[3,3] > 0 & varic[4,4] > 0 & 
+                varic[5,5] > 0 & varic[6,6] > 0  &
+                estc[1] < lime & estc[2] < lime & estc[3] < lime & estc[4] < lime &
+                estc[5] < lime & estc[6] < lime ){
+       
+       var.varp1 =varic[1,1]; Lvarp1 =estc[1]-1.96*sqrt(var.varp1); Uvarp1=estc[1]+1.96*sqrt(var.varp1)
+       var.varp2 =varic[2,2]; Lvarp2 =estc[2]-1.96*sqrt(var.varp2); Uvarp2=estc[2]+1.96*sqrt(var.varp2)
+       var.varp3 =varic[3,3]; Lvarp3 =estc[3]-1.96*sqrt(var.varp3); Uvarp3=estc[3]+1.96*sqrt(var.varp3)
+       var.varp4 =varic[4,4]; Lvarp4 =estc[4]-1.96*sqrt(var.varp4); Uvarp4=estc[4]+1.96*sqrt(var.varp4)
+       var.varp5 =varic[5,5]; Lvarp5 =estc[5]-1.96*sqrt(var.varp5); Uvarp5=estc[5]+1.96*sqrt(var.varp5)
+       var.varp6 =varic[6,6]; Lvarp6 =estc[6]-1.96*sqrt(var.varp6); Uvarp6=estc[6]+1.96*sqrt(var.varp6)
+       #var.varp7 =varic[7,7]; Lvarp7 =estc[7]-1.96*sqrt(var.varp7); Uvarp7=estc[7]+1.96*sqrt(var.varp7)
+       #var.varp8 =varic[8,8]; Lvarp8 =estc[8]-1.96*sqrt(var.varp8); Uvarp8=estc[8]+1.96*sqrt(var.varp8)
+       
+       cat(c(estc,fit$value),file = param_Weibull,append = TRUE, "\n") 
+       cat(c(var.varp1,var.varp2,var.varp3,var.varp4,var.varp5,var.varp6),file = Erro_Weibull,append = TRUE, "\n") 
+       
+       }
+     }  
+    }
+ 
+  } 
+}
+
+
+
+dir.create(paste(wd,"/Figure_weibull",sep=""))
 
 ###-------------------------------------------------------------------------------------------------
 # Define files
@@ -60,7 +167,7 @@ beta4 =   2
 beta5 =  -3
 beta6 =   1
 varp=c(beta1,beta2,beta3,beta4,beta5,beta6)
- 
+
 ##Graphics
 
 samp<-c(200,400,600,800,1000)
@@ -87,10 +194,10 @@ dps<-cbind(apply(betas200[,1:6],2,sd),
            apply(betas1000[,1:6],2,sd))
 
 variancia<-cbind(apply(betas200[,1:6],2,var),
-           apply(betas400[,1:6],2,var),
-           apply(betas600[,1:6],2,var),
-           apply(betas800[,1:6],2,var),
-           apply(betas1000[,1:6],2,var))
+                 apply(betas400[,1:6],2,var),
+                 apply(betas600[,1:6],2,var),
+                 apply(betas800[,1:6],2,var),
+                 apply(betas1000[,1:6],2,var))
 
 var200 <- read.table(paste(wd,"/Output/simulation200/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
 var400 <- read.table(paste(wd,"/Output/simulation400/modelos_No_p1/weibull/Erro_Weibull.txt",sep=""))
@@ -143,7 +250,7 @@ f <- ggplot(data = vies1, aes(x = samp, y = V6)) +
   geom_line(linetype = 2) +
   labs(y = expression(paste("BIAS ( ", hat(beta)[6], " )")), x = "Sample Size")
 
-tiff(file=paste(wd,"/Figure","/beta_bias.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+tiff(file=paste(wd,"/Figure_weibull","/beta_bias.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 gridExtra::grid.arrange(a,b,c,d,e,f,nrow=3)
 dev.off()
 
@@ -182,7 +289,7 @@ f2 <- ggplot(data = vars1, aes(x = samp, y = Z6)) +
   geom_line(linetype = 2) +
   labs(y = expression(paste("VAR ( ", hat(beta)[6], " )")), x = "Sample Size")
 
-tiff(file=paste(wd,"/Figure","/beta_var.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+tiff(file=paste(wd,"/Figure_weibull","/beta_var.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 gridExtra::grid.arrange(a2,b2,c2,d2,e2,f2,nrow=3)
 dev.off()
 
@@ -231,88 +338,20 @@ f3 <- ggplot(data = betas1, aes(x = samp, y = W6)) +
   labs(y = expression(paste("Mean (",hat(beta)[6],")" )), x = "Sample Size")
 
 
-tiff(file=paste(wd,"/Figure","/beta_mean.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+tiff(file=paste(wd,"/Figure_weibull","/beta_mean.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
 grid.arrange(arrangeGrob(a3,b3, ncol=2), 
-                        arrangeGrob(c3,d3, ncol=2),
-                        arrangeGrob(e3,f3, ncol=2), ncol=1)
+             arrangeGrob(c3,d3, ncol=2),
+             arrangeGrob(e3,f3, ncol=2), ncol=1)
 
 dev.off()
 
 
-#Gamma model
+#########################################################################
 
-##Graphics
-gammas200 <- read.table(paste(wd,'/','Output/simulation',N[1],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas400 <- read.table(paste(wd,'/','Output/simulation',N[2],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas600 <- read.table(paste(wd,'/','Output/simulation',N[3],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas800 <- read.table(paste(wd,'/','Output/simulation',N[4],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-gammas1000 <- read.table(paste(wd,'/','Output/simulation',N[5],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
-
-#exp means
-gammas<-cbind(apply(cbind((gammas200[,3:4]),gammas200[,5]),2,mean),
-              apply(cbind((gammas400[,3:4]),gammas400[,5]),2,mean),
-              apply(cbind((gammas600[,3:4]),gammas600[,5]),2,mean),
-              apply(cbind((gammas800[,3:4]),gammas800[,5]),2,mean),
-              apply(cbind((gammas1000[,3:4]),gammas1000[,5]),2,mean))
-
-#means logistic part
-logis<-cbind(apply((gammas200[,1:2]),2,mean),
-             apply((gammas400[,1:2]),2,mean),
-             apply((gammas600[,1:2]),2,mean),
-             apply((gammas800[,1:2]),2,mean),
-             apply((gammas1000[,1:2]),2,mean))
-
-#SD of the parameters (exp)
-gdps<-cbind(apply(cbind((gammas200[,3:4]),gammas200[,5]),2,sd),
-            apply(cbind((gammas400[,3:4]),gammas400[,5]),2,sd),
-            apply(cbind((gammas600[,3:4]),gammas600[,5]),2,sd),
-            apply(cbind((gammas800[,3:4]),gammas800[,5]),2,sd),
-            apply(cbind((gammas1000[,3:4]),gammas1000[,5]),2,sd))
-
-#SD of parameters logistic part
-dpsg<-cbind(apply(gammas200[,1:2],2,sd),
-            apply(gammas400[,1:2],2,sd),
-            apply(gammas600[,1:2],2,sd),
-            apply(gammas800[,1:2],2,sd),
-            apply(gammas1000[,1:2],2,sd))
-
-
-#Variance
-varianciag<-cbind(apply((gammas200[,1:2]),2,var),
-                  apply((gammas400[,1:2]),2,var),
-                  apply((gammas600[,1:2]),2,var),
-                  apply((gammas800[,1:2]),2,var),
-                  apply((gammas1000[,1:2]),2,var))
-
-viesg<-rbind( logis[1,]+3,logis[2,]-1 )
-
-eqmg<-viesg^2+varianciag  
-
-samp<-c(200,400,600,800,1000)
-
-
-varg200 <- read.table(paste(wd,"/Output/simulation200/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg400 <- read.table(paste(wd,"/Output/simulation400/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg600 <- read.table(paste(wd,"/Output/simulation600/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg800 <- read.table(paste(wd,"/Output/simulation800/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-varg1000 <- read.table(paste(wd,"/Output/simulation1000/modelos_No_p1/gamma/Erro_gamma.txt",sep=""))
-
-#Mean variance logistic part
-varsg<-cbind(apply((varg200[,1:2]),2,mean),
-             apply((varg400[,1:2]),2,mean),
-             apply((varg600[,1:2]),2,mean),
-             apply((varg800[,1:2]),2,mean),
-             apply((varg1000[,1:2]),2,mean))
-
-varsg1<-cbind(apply(sqrt(varg200[,1:2]),2,mean),
-             apply(sqrt(varg400[,1:2]),2,mean),
-             apply(sqrt(varg600[,1:2]),2,mean),
-             apply(sqrt(varg800[,1:2]),2,mean),
-             apply(sqrt(varg1000[,1:2]),2,mean))
-
-
+dir.create(paste(wd,"/Tables_weibull",sep=""))
 
 #Theoretic E(t|x=)
+
 media<-function(x){
   alfa=exp(beta1+beta2*x)
   teta=exp(beta3+beta4*x)
@@ -323,7 +362,6 @@ media<-function(x){
 }
 media(x=-1)
 media(x=1)
-
 
 #Mean time ZIWeibull
 
@@ -341,104 +379,16 @@ mediaw<-function(x){
   media1=(1-po1)*teta1*gamma(1+(1/alfa1))
   return (rbind(media1,po1))
 }
-mediaw(x=1)
-mediaw(x=-1)
 
+means<-rbind(
+mediaw(x=1),
+mediaw(x=-1))
 
-##Mean time ZIgamma
-po<-NULL
-scale.1<-NULL
-para<-NULL
-mediag<-function(x){
-  for (j in 1:5){
-    po[j]=exp(logis[1,j]+logis[2,j]*x)/(1+exp(logis[1,j]+logis[2,j]*x))
-    scale.1[j]=gammas[2,j]*exp(gammas[3,j]*x)
-    para[j]<-gammas[1,j]
-  }
-  media.g=(1-po)*(para)*(1/scale.1)
-  return(rbind(media.g,po))
-}
+colnames(means)[1:5]<-c("200","400","600","800","1000")
 
-mediag(-1)
-mediag(1)
+row.names(means)<-c("Mean x=1","P0 x=1","Mean x=-1","P0 x=-1")
 
-rbind(
-mediaw(-1),
-mediag(-1),
-mediaw(1),
-mediag(1))
-
-
-##Mean time plots
-#media2 = data.frame(samp=samp,c(mediaw(-1)[1,],
-#                    mediag(-1)[1,],
-#                    mediaw(1)[1,],
-#                    mediag(1)[1,])
-#,grupo=c(rep("ZIWeibull",5),rep("ZIGamma",5)))
-
-#ggplot(data=media2, aes(x = samp, y = media.1, group=grupo)) +
-#  geom_point(show.legend=FALSE, shape = 16) +
-#  geom_line(aes(linetype = grupo)) +
-#  geom_hline(yintercept = media) +
-#  ylim(c(24,27.5)) +
-#  labs(y = "Mean Time", x = "Sample Size")+
-#  guides(fill=guide_legend("Regression"))+
-#  scale_color_discrete(name = "Regression")
-
-#Graph of p_o
-
-#po2=data.frame(pos=c(po,po1),samp=samp,grupo=c(rep("ZIWeibull",5),rep("ZIGamma",5)))
-
-
-#ggplot(data = po2, aes(x = samp, y = pos, group=grupo)) +
-#  geom_point(show.legend=FALSE, shape = 16) +
-#  geom_line(aes(linetype = grupo)) +
-#  geom_hline(yintercept = p0) +
-#  ylim(c(min(pos),0.1195)) +
-#  labs(y = "Mean Time", x = "Sample Size")
-
-
-#Plots of betas parameters from logistic
-
-logi<-data.frame(w1=logis[1,],w2=logis[2,],w3=logis[1,]-beta5,w4=logis[2,]-beta6,w5=varianciag[1,],w6=varianciag[2,],samp=samp)
-
-l1 <- ggplot(data = logi, aes(x = samp, y = w1)) +
-  geom_point(show.legend = FALSE, shape = 16) +
-  geom_line(linetype = 2) +
-  geom_hline(yintercept = beta5) +
-  labs(y = expression(paste("Mean (",hat(beta)[0],")" )), x = "Sample Size")
-
-l2 <- ggplot(data = logi, aes(x = samp, y = w2)) +
-  geom_point(show.legend = FALSE, shape = 16) +
-  geom_line(linetype = 2) +
-  geom_hline(yintercept = beta6) +
-  labs(y = expression(paste("Mean (",hat(beta)[1],")" )), x = "Sample Size")
-
-l3 <- ggplot(data = logi, aes(x = samp, y = w5)) +
-  geom_point(show.legend = FALSE, shape = 16) +
-  geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[0], " )")), x = "Sample Size")
-
-l4 <- ggplot(data = logi, aes(x = samp, y = w4)) +
-  geom_point(show.legend = FALSE, shape = 16) +
-  geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[1], " )")), x = "Sample Size")
-
-l5 <- ggplot(data = logi, aes(x = samp, y = w5)) +
-  geom_point(show.legend = FALSE, shape = 16) +
-  geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[0], " )")), x = "Sample Size")
-
-l6 <- ggplot(data = logi, aes(x = samp, y = w6)) +
-  geom_point(show.legend = FALSE, shape = 16) +
-  geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample Size")
-
-tiff(file=paste(wd,"/Figure","/param_logistic.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
-grid.arrange(arrangeGrob(l1,l2,l3,l4,l5,l6, ncol=2))
-dev.off()
-
-# --------------------------------------------------------------------------------- #
+write.table(means,here("Tables_weibull","means.txt"),sep=";",row.names = T)
 
 ###Tables
 
@@ -557,133 +507,6 @@ row.names(tab1000)<-c(1,2,3,4,5,6)
 final1<-rbind(tab200,tab400,tab600,tab800,tab1000)
 row.names(final1)<-rep(c(1:6),5)
 colnames(final1)<-c("media","LCI","UCI","SD of betas","Mean Std Err","vies","eqmg","CP")
-final1
 
+write.table(final1,here("Tables_weibull","final.txt"),sep=";",row.names = F)
 
-
-
-
-
-##Gamma part
-
-estg <- c(-3, 1)
-
-#MAtrix only for beta_0 e beta_1 (col 1 e 2)
-gammas200e <- gammas200[,1:2]
-gammas400e <- gammas400[,1:2]
-gammas600e <- gammas600[,1:2]
-gammas800e <- gammas800[,1:2]
-gammas1000e <- gammas1000[,1:2]
-
-LimInfg200 <- gammas200e[,]-1.96*sqrt(varianciag[,1])
-LimSupg200 <- gammas200e[,]+1.96*sqrt(varianciag[,1])
-Rg200 <- nrow(gammas200e)
-lim_inf_rg200 <- matrix(NA,Rg200,2)
-lim_sup_rg200 <- matrix(NA,Rg200,2)
-
-for (i in 1:2){
-  lim_inf_rg200[,i] <- gammas200e[,i] -1.96*sd(gammas200e[,i])
-  lim_sup_rg200[,i] <- gammas200e[,i] +1.96*sd(gammas200e[,i])
-}
-
-Prob_coberturag200 <- NULL
-for (i in 1:2){
-  Prob_coberturag200[i] <- (sum(lim_sup_rg200[,i] >= estg[i] & lim_inf_rg200[,i] <= estg[i]))/Rg200
-}
-
-
-LimInfg400 <- gammas400e[,]-1.96*sqrt(varianciag[,1])
-LimSupg400 <- gammas400e[,]+1.96*sqrt(varianciag[,1])
-Rg400 <- nrow(gammas400e)
-lim_inf_rg400 <- matrix(NA,Rg400,2)
-lim_sup_rg400 <- matrix(NA,Rg400,2)
-
-for (i in 1:2){
-  lim_inf_rg400[,i] <- gammas400e[,i] -1.96*sd(gammas400e[,i])
-  lim_sup_rg400[,i] <- gammas400e[,i] +1.96*sd(gammas400e[,i])
-}
-
-Prob_coberturag400 <- NULL
-for (i in 1:2){
-  Prob_coberturag400[i] <- (sum(lim_sup_rg400[,i] >= estg[i] & lim_inf_rg400[,i] <= estg[i]))/Rg400
-}
-
-
-LimInfg600 <- gammas600e[,]-1.96*sqrt(varianciag[,1])
-LimSupg600 <- gammas600e[,]+1.96*sqrt(varianciag[,1])
-Rg600 <- nrow(gammas600e)
-lim_inf_rg600 <- matrix(NA,Rg600,2)
-lim_sup_rg600 <- matrix(NA,Rg600,2)
-
-for (i in 1:2){
-  lim_inf_rg600[,i] <- gammas600e[,i] -1.96*sd(gammas600e[,i])
-  lim_sup_rg600[,i] <- gammas600e[,i] +1.96*sd(gammas600e[,i])
-}
-
-Prob_coberturag600 <- NULL
-for (i in 1:2){
-  Prob_coberturag600[i] <- (sum(lim_sup_rg600[,i] >= estg[i] & lim_inf_rg600[,i] <= estg[i]))/Rg600
-}
-
-
-LimInfg800 <- gammas800e[,]-1.96*sqrt(varianciag[,1])
-LimSupg800 <- gammas800e[,]+1.96*sqrt(varianciag[,1])
-Rg800 <- nrow(gammas800e)
-lim_inf_rg800 <- matrix(NA,Rg800,2)
-lim_sup_rg800 <- matrix(NA,Rg800,2)
-
-for (i in 1:2){
-  lim_inf_rg800[,i] <- gammas800e[,i] -1.96*sd(gammas800e[,i])
-  lim_sup_rg800[,i] <- gammas800e[,i] +1.96*sd(gammas800e[,i])
-}
-
-Prob_coberturag800 <- NULL
-for (i in 1:2){
-  Prob_coberturag800[i] <- (sum(lim_sup_rg800[,i] >= estg[i] & lim_inf_rg800[,i] <= estg[i]))/Rg800
-}
-
-
-LimInfg1000 <- gammas1000e[,]-1.96*sqrt(varianciag[,1])
-LimSupg1000 <- gammas1000e[,]+1.96*sqrt(varianciag[,1])
-Rg1000 <- nrow(gammas1000e)
-lim_inf_rg1000 <- matrix(NA,Rg1000,2)
-lim_sup_rg1000 <- matrix(NA,Rg1000,2)
-
-for (i in 1:2){
-  lim_inf_rg1000[,i] <- gammas1000e[,i] -1.96*sd(gammas1000e[,i])
-  lim_sup_rg1000[,i] <- gammas1000e[,i] +1.96*sd(gammas1000e[,i])
-}
-
-Prob_coberturag1000 <- NULL
-for (i in 1:2){
-  Prob_coberturag1000[i] <- (sum(lim_sup_rg1000[,i] >= estg[i] & lim_inf_rg1000[,i] <= estg[i]))/Rg1000
-}
-
-probcobg <- cbind(Prob_coberturag200,
-                  Prob_coberturag400,
-                  Prob_coberturag600,
-                  Prob_coberturag800,
-                  Prob_coberturag1000)
-
-
-#We will use the logis, which is the matrix with the mean of the parameters from the logistic part
-
-tabg200<-cbind(logis[,1],cbind(logis[,1]-1.96*sqrt(varianciag[,1]),logis[,1]+1.96*sqrt(varianciag[,1])),dpsg[,1],varsg[,1],viesg[,1],eqmg[,1],probcobg[,1])
-row.names(tabg200)<-c(1,2)
-
-tabg400<-cbind(logis[,2],cbind(logis[,2]-1.96*sqrt(varianciag[,2]),logis[,2]+1.96*sqrt(varianciag[,2])),dpsg[,2],varsg[,2],viesg[,2],eqmg[,2],probcobg[,2])
-row.names(tabg400)<-c(1,2)
-
-tabg600<-cbind(logis[,3],cbind(logis[,3]-1.96*sqrt(varianciag[,3]),logis[,3]+1.96*sqrt(varianciag[,3])),dpsg[,3],varsg[,3],viesg[,3],eqmg[,3],probcobg[,3])
-row.names(tabg600)<-c(1,2)
-
-tabg800<-cbind(logis[,4],cbind(logis[,4]-1.96*sqrt(varianciag[,4]),logis[,4]+1.96*sqrt(varianciag[,4])),dpsg[,4],varsg[,4],viesg[,4],eqmg[,4],probcobg[,4])
-row.names(tabg800)<-c(1,2)
-
-tabg1000<-cbind(logis[,5],cbind(logis[,5]-1.96*sqrt(varianciag[,5]),logis[,5]+1.96*sqrt(varianciag[,5])),dpsg[,5],varsg[,5],viesg[,5],eqmg[,5],probcobg[,5])
-row.names(tabg1000)<-c(1,2)
-
-final<-rbind(tabg200,tabg400,tabg600,tabg800,tabg1000)
-row.names(final)<-rep(c("beta_0", "beta_1"),5)
-colnames(final)<-c("media","LCI","UCI","SD of betas","Mean Std Err","vies","eqmg","CP")
-final
