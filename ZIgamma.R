@@ -51,7 +51,7 @@ if(dist=="gamma"){
 
 detach(data,unload = T)
    return(summa)
-}else warning('So far, only gamma distribution is possible: "gamma" ')
+}else warning('So far, only gamma distribution is possible:"gamma" ')
 
 }
 
