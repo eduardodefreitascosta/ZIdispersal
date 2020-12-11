@@ -48,7 +48,7 @@ Name of the variables in argument "co" must be equal to the dataset
 %% ~put references to the literature/web site here ~
 }
 \author{
-Eduardo, Silvana, Giulia, Taina, Mauro
+Eduardo de Freitas Costa, Silvana Schneider, Giulia Carlotto, Taina Cabalheiro, Mauro Oliveira
 %%  ~~who you are~~
 }
 \note{
