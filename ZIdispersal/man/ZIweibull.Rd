@@ -7,7 +7,7 @@
 This function runs a ZIweibull regression considering zeros and censored data
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
-\usage{ZIweibull(t=dist,d=delta,data=wild_boar,co=c("age","sex"))}
+\usage{ZIweibull(t,d,data,co=c())}
 \format{
   A data frame with none or 2 covariables.
   \describe{

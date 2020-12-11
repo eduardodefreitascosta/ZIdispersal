@@ -1,4 +1,4 @@
-Package: ZIgamma
+Package: ZIdispersal
 Type: Package
 Title: Zero-inflated-censored regression for animal dispersal
 Version: 0.1.0
