@@ -3,7 +3,7 @@
 ZIgamma<-function(ze,t,d,data,co=c(),dist){
 
   #Packages to be used
-  packages<-c("flexsurv","survival","here")
+  packages<-c("flexsurv","survival")
 
 
   # Install packages not yet installed
