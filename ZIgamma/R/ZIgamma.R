@@ -55,6 +55,3 @@ ZIgamma<-function(ze,t,d,data,co=c(),dist){
 
 }
 
-
-
-ZIgamma(ze=zero,t=dist,d=delta,data=wild_boar,co=c("age"),dist="weibull")
