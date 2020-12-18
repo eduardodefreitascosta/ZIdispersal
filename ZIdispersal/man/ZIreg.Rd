@@ -5,7 +5,7 @@
 %%  ~~function to do ... ~~
 }
 \description{
-This function fitts a ZIgamma or a ZIweibull regression model to datasets with continous outcome, zero inflated and censored data.
+This function runs a ZIgamma or a ZIweibull regression model to datasets with continous outcome, zero inflated and censored data.
 }
 \usage{
 ZIreg(formula,zero,censor,data,dist)

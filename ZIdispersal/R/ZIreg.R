@@ -1,4 +1,5 @@
 
+
 ZIreg<-function(formula,zero,censor,data,dist){
 
 attach(data)
