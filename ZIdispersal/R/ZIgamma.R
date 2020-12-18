@@ -1,6 +1,6 @@
 
 
-ZIgamma<-function(ze,t,d,data,co=c(),dist){
+ZIgamma<-function(formula,zero,censor,data,dist){
 
   #Packages to be used
   packages<-c("flexsurv","survival")
@@ -15,12 +15,46 @@ ZIgamma<-function(ze,t,d,data,co=c(),dist){
   # Packages loading
   invisible(lapply(packages, library, character.only = TRUE))
 
-
   attach(data)
 
-  if(dist=="gamma"){
 
-    if(length(co)!=0){
+  data1<-model.frame(formula,data=data)
+  mt <- attr(x = data1, which = "terms")
+
+  x <- model.matrix(object = mt, data = data1,xlev = T)
+
+  t<-data1[,1]
+
+  (fmla <- as.formula(paste("zero ~ " , (Reduce(paste,deparse(mt[[3]]))))))
+
+  a<-glm(fmla,family=binomial(link='logit'),data=data)
+
+
+  (fmla2 <- as.formula(paste(paste("Surv(t,censor,type='right') ~ " , (Reduce(paste,deparse(mt[[3]])))))))
+
+
+  b<-flexsurvreg(fmla2,data=data,subset=t!=0,dist=dist)
+
+
+  summa<-list(a,b)
+  names(summa)<-c("Logistic","Gamma")
+
+  detach(data,unload = T)
+  return(summa)
+
+  }
+
+
+ZIgamma(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="gamma")
+
+
+
+
+
+
+
+
+      if(length(co)!=0){
 
       data_log<-cbind.data.frame(ze,data[, c(co)])
 
