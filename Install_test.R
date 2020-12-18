@@ -5,5 +5,5 @@ library(devtools)
 install_github("eduardodefreitascosta/Zidispersal/ZIdispersal",force=T)
 library(ZIdispersal)
 
-ZIreg(ze=zero,t=dist,d=delta,data=wild_boar,co=c(),dist="gamma")
+ZIreg(distãge+sex,zero=zero,censor=delta,data=wild_boar,dist="gamma")
 
