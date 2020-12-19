@@ -2,13 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
-.Install_test
 *.docx
 *.txt
-Old_files/
+/Zidispersal/Old_files
 Figures/
 Latex_files/
 Paper/
 References/
 Figure/
 Output/
+Install_test.R

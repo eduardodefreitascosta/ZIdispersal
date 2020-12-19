@@ -1,5 +1,4 @@
 
-
 ZIgamma<-function(formula,zero,censor,data,dist){
 
   #Packages to be used
