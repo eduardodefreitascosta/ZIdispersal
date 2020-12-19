@@ -77,10 +77,10 @@ attach(data)
 
 
 
-      cal<- (paste(formula))
+      #cal<- (paste(formula))
 
 
-      out<-list(cal,main,fit$value,length(t),sum(t==0),sum(censor==0),length(fit$par)-1,AIC,AICc,BIC)
+      out<-list(print(formula),main,fit$value,length(t),sum(t==0),sum(censor==0),length(fit$par)-1,AIC,AICc,BIC)
       names(out)<-c("Call","Coefficients","LogLik","N","Zeros","Censored","df","AIC","AICc","BIC")
 
       return(out)

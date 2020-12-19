@@ -5,7 +5,7 @@
 %%  ~~function to do ... ~~
 }
 \description{
-This function runs a ZIgamma or a ZIweibull regression model to datasets with continous outcome, zero inflated and censored data.
+This function is used to fit ZIgamma or a ZIweibull regression model to datasets with continous outcome, zero-inflated and censored data.
 }
 \usage{
 ZIreg(formula,zero,censor,data,dist)
@@ -13,13 +13,13 @@ ZIreg(formula,zero,censor,data,dist)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{formula}{
-an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of model specification are given under ‘Details’.
+an object of class "formula" (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of model specification are given under "Details".
 }
 \item{zero}{
-A vector containing an indicative variable used to indicate zeros.
+a vector containing an indicative variable used to indicate zeros.
 }
 \item{censor}{
-A vector containing an indicative variable used to indicate zeros.
+a vector containing an indicative variable used to indicate censoring.
 }
 \item{data}{
 an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which ZIreg is called.
@@ -29,11 +29,14 @@ a description of the distribution to be used in the model. For ZIreg this is a c
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+When dist="gamma", the model is a hurdle model using a logistic regression for zeros and gamma for distances larger than zero (Nobre et al., 2017). When dist="weibull", the mode is a zero-inflated-censored weibull model (Louzada et al., 2018). A typical predictor has the form response ~ terms where response is the (numeric) response vector and terms is a series of terms which specifies a linear predictor for response. Also indicators for zero and for censoring must be provided in specific arguments. A terms specification of the form first + second indicates all the terms in first together with all the terms in second with any duplicates removed. A specification of the form first:second indicates the set of terms obtained by taking the interactions of all terms in first with all terms in second. The specification first*second indicates the cross of first and second. This is the same as first + second + first:second. The terms in the formula will be re-ordered so that main effects come first, followed by the interactions, all second-order, all third-order and so on: to avoid this pass a terms object as the formula.
 }
+
 \value{
-ZIreg returns different objects dependent on the distribution used.For "gamma" it is the output from a logistic glm object and a list of class "flexsurvreg". For more information see ?glm and ?flexsurvreg.
-For dist="weibull", it is a list:
+ZIreg returns different objects dependent on the distribution used. For "gamma" it is the output from a logistic glm object and a list of class "flexsurvreg" (Jackson, 2016). For more information see ?glm and ?flexsurvreg.
+The function "summary" can be applied to each object of the output: "$Logistic or $Gamma". 
+
+For dist="weibull", the output is a list:
 
 \item{call}{A copy of the function call}
 \item{LogLik }{Log-likelihood}
@@ -41,16 +44,16 @@ For dist="weibull", it is a list:
 \item{Zeros }{The number of zero observations}
 \item{Censored }{The number of censored observations}
 \item{df }{Degrees of freedom}
-\item{AIC }{Akaike's information criterion (-2*log likelihood + 2*number of estimated parameters)}
-\item{AICc }{Corrected Akaike's information criterion }
-\item{BIC }{Bayesian information criterion }
+\item{AIC }{Akaike's information criterion (-2*log likelihood + 2*k), where k is the number of predictors}
+\item{AICc }{Corrected Akaike's information criterion (AIC+(2k(k+1))/(n-k)),where k is the number of predictors and n is the number of observations }
+\item{BIC }{Bayesian information criterion (k*ln(n)-2*log likelihood), where k is the number of predictors and n is the number of observations}
 
 %% ...
 }
 \references{
 Jackson, C. (2016). flexsurv: A Platform for Parametric Survival Modeling in R. Journal of Statistical Software, 70(8), 1-33. doi:10.18637/jss.v070.i08
 
-Louzada F, Moreira FF, de Oliveira MR (2018) A zero-inflated non defaultrate regression model for credit scoring data. Communications in Statistics-Theory and Methods 47(12):3002–3021
+Louzada F, Moreira FF, de Oliveira MR (2018) A zero-inflated non defaultrate regression model for credit scoring data. Communications in Statistics-Theory and Methods 47(12):3002-3021
 
 Nobre AA, Carvalho MS, Griep RH, Fonseca MdJMd, Melo ECP, Santos IdS,Chor D (2017) Multinomial model and zero-inflated gamma model to studytime spent on leisure time physical activity: an example of elsa-brasil. Revista de saude publica 51:76
 }
@@ -68,8 +71,10 @@ Eduardo de Freitas Costa, Silvana Schneider, Giulia Bagatini Carlotto, Taina Cab
 }
 \examples{
 ##---- Exemple of wild boar dispersal ----
-url for download: https://github.com/eduardodefreitascosta/ZIdispersal/blob/master/ZIdispersal/wild_boar.rds
+url for the dataset download: 
+https://github.com/eduardodefreitascosta/ZIdispersal/blob/master/ZIdispersal/wild_boar.rds
 
+Functions to run the model:
 Zireg(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="weibull")
 or
 Zireg(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="gamma")
