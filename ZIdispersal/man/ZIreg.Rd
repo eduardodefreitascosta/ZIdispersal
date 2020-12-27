@@ -22,7 +22,7 @@ a vector containing an indicative variable used to indicate zeros.
 a vector containing an indicative variable used to indicate censoring.
 }
 \item{data}{
-an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which ZIreg is called.
+a data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which ZIreg is called.
 }
 \item{dist}{
 a description of the distribution to be used in the model. For ZIreg this is a character string. only possible options are "weibull" and "gamma"
@@ -40,7 +40,7 @@ For dist="weibull", the output is a list:
 
 \item{call}{A copy of the function call}
 \item{LogLik }{Log-likelihood}
-\item{N }{The non-transformed maximum likelihood estimates}
+\item{N }{The number of observations}
 \item{Zeros }{The number of zero observations}
 \item{Censored }{The number of censored observations}
 \item{df }{Degrees of freedom}
