@@ -7,3 +7,4 @@ library(ZIdispersal)
 
 ZIreg(dist~age:sex,zero=zero,censor=delta,data=wild_boar,dist="weibull")
 
+

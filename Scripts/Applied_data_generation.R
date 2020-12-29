@@ -1,6 +1,6 @@
 
 #Packages to be used
-packages<-c("readxl","here","tidyverse","ggplot2","flexsurv","knitr","glmmsr","plotly","gridExtra","grid","ggridges","ggthemes","summarytools","ggcorrplot","survival")
+packages<-c("readxl","here","tidyverse","ggplot2","flexsurv","knitr","glmmsr","plotly","gridExtra","grid","ggridges","ggthemes","ggcorrplot","survival")
 
 
 # Install packages not yet installed
@@ -153,7 +153,7 @@ dir.create(paste(wd,"/Figure_applied",sep=""))
 
 data$Sex<-c(rep("Female",200),rep("Male",200))
 
-tiff(file=paste(wd,"/Figure_applied","/dist_hist.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+jpeg(file=paste(wd,"/Figure_applied","/dist_hist.jpg",sep=""), height = 4, width = 6, units = 'in', res=300)
 ggplot(data, aes(x=dist))+
   geom_histogram(color="black", fill="white")+
   facet_grid(Sex ~ .)+

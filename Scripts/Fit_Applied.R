@@ -42,9 +42,12 @@ Hc=try(fit$hessian); varic=try(-solve(Hc))
 
 weibull_parameters<-cbind(estc,sqrt(diag(varic)),estc-1.96*sqrt(diag(varic)),estc+1.96*sqrt(diag(varic)))
 
-colnames(weibull_parameters)<-c("Parameter","Standar error","2.5%","97.5%")
+colnames(weibull_parameters)<-c("Parameter","Standard error","2.5%","97.5%")
 
-write.table(weibull_parameters,here("Tables_applied","weibull.txt"),sep=";",row.names = F)
+rownames(weibull_parameters)<-c("Shape","age","sex","Scale","age","sex","intercept","age","sex")
+
+
+#write.table(weibull_parameters,here("Tables_applied","weibull.txt"),sep=";",row.names = T)
 
 ##############
 #Gamma model #
@@ -53,6 +56,17 @@ write.table(weibull_parameters,here("Tables_applied","weibull.txt"),sep=";",row.
 summary(glm(data$zero ~ (data$age)+data$sex,family=binomial(link='logit'))->a)
 
 b<-flexsurvreg(Surv(data$dist, data$delta,type='right')~(data$age)+data$sex,dist="gamma",subset = data$zer==0)
+
+
+gamma_parameters<-rbind(cbind(summary(a)$coefficients[,1:2],confint(a)),cbind(b$res[,1],b$res[,4],b$res[,2:3]))
+
+colnames(gamma_parameters)<-c("Parameter","Standard error","2.5%","97.5%")
+
+rownames(gamma_parameters)<-c("Intercept","age","sex","Shape","Rate","age","Sex")
+
+
+#write.table(gamma_parameters,here("Tables_applied","gamma.txt"),sep=";",row.names = T)
+
 
 
 ##Mean weibull model
@@ -114,7 +128,7 @@ Regression<-c(rep("ZIWeibull",length(dom)*2),rep("ZIGamma",length(dom)*2))
 media2 = data.frame(Scaled_Age=c(dom,dom,dom,dom),media.1=media,Sex=Sex,grupo=Regression)
 
 
-tiff(file=paste(wd,"/Figure_applied","/mean_distance.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
+jpeg(file=paste(wd,"/Figure_applied","/mean_distance.jpg",sep=""), height = 4, width = 6, units = 'in', res=300)
 par(xpd=NA)
 ggplot(data=media2, aes(x = Scaled_Age, y = media.1, group=Sex)) +
   #  geom_point(show.legend=FALSE, shape = 10) +
@@ -158,22 +172,27 @@ BIC_gamma
 BIC_weibull
 
 
-##Linear model
 
-#hist(data$dist[data$zero==0 & data$delta==1])
+applied_regression<-list(reg=rbind(cbind(gamma_parameters,c(summary(a)$coefficients[,4],pchisq(wald_gamma,1,lower.tail = F))),
+                          cbind(weibull_parameters,pchisq(wald_weibull,1,lower.tail = F))
+                          ),Adj=c(AIC_gamma,
+                              AIC_weibull,
+                              AICc_gamma,
+                              AICc_weibull,
+                              BIC_gamma,
+                              BIC_weibull
+                          )
+                         )
 
-#tra<-data$dist[data$zero==0 & data$delta==1]
-
-#data2<-subset(data,data$zero==0 & data$delta==1)
+colnames(applied_regression$reg)<-c("Parameter","Standard error","2.5%","97.5%","p-value")
 
 
-#summary(lm(log(dist)~sex+age,data=data2)->mod)
-#hist(mod$residuals)
+names(applied_regression$Adj)<-c("AIC_gamma",
+                                 "AIC_weibull",
+                                 "AICc_gamma",
+                                 "AICc_weibull",
+                                 "BIC_gamma",
+                                 "BIC_weibull")
 
-
-#plot(mod)
-
-#exp(mod$coefficients[1]+mod$coefficients[2]*0+mod$coefficients[3]*15)
-
-#exp(mod$coefficients[1]+mod$coefficients[2]*1+mod$coefficients[3]*12)
+capture.output(applied_regression, file = here("Tables_applied","applied_regression.txt"))
 

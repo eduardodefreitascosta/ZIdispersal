@@ -11,4 +11,12 @@ Paper/
 References/
 Figure/
 Output/
+Figure_applied/
+Figure_gamma/
+Figure_weibull/
+Tables_applied/
+Tables_gamma/
+Tables_weibull/
+Documents/
 Install_test.R
+.gitignore
