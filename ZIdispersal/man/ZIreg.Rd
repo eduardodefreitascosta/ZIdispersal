@@ -22,7 +22,7 @@ a vector containing an indicative variable used to indicate zeros.
 a vector containing an indicative variable used to indicate censoring.
 }
 \item{data}{
-an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which ZIreg is called.
+a data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which ZIreg is called.
 }
 \item{dist}{
 a description of the distribution to be used in the model. For ZIreg this is a character string. only possible options are "weibull" and "gamma"
@@ -34,13 +34,13 @@ When dist="gamma", the model is a hurdle model using a logistic regression for z
 
 \value{
 ZIreg returns different objects dependent on the distribution used. For "gamma" it is the output from a logistic glm object and a list of class "flexsurvreg" (Jackson, 2016). For more information see ?glm and ?flexsurvreg.
-The function "summary" can be applied to each object of the output: "$Logistic or $Gamma".
+The function "summary" can be applied to each object of the output: "$Logistic or $Gamma". 
 
 For dist="weibull", the output is a list:
 
 \item{call}{A copy of the function call}
 \item{LogLik }{Log-likelihood}
-\item{N }{The non-transformed maximum likelihood estimates}
+\item{N }{The number of observations}
 \item{Zeros }{The number of zero observations}
 \item{Censored }{The number of censored observations}
 \item{df }{Degrees of freedom}
@@ -71,7 +71,7 @@ Eduardo de Freitas Costa, Silvana Schneider, Giulia Bagatini Carlotto, Taina Cab
 }
 \examples{
 ##---- Exemple of wild boar dispersal ----
-url for the dataset download:
+url for the dataset download: 
 https://github.com/eduardodefreitascosta/ZIdispersal/blob/master/ZIdispersal/wild_boar.rds
 
 Functions to run the model:
