@@ -153,7 +153,7 @@ dir.create(paste(wd,"/Figure_applied",sep=""))
 
 data$Sex<-c(rep("Female",200),rep("Male",200))
 
-jpeg(file=paste(wd,"/Figure_applied","/dist_hist.jpg",sep=""), height = 4, width = 6, units = 'in', res=300)
+jpeg(here("Figure_applied","dist_hist.jpg"), height = 4, width = 6, units = 'in', res=300)
 ggplot(data, aes(x=dist))+
   geom_histogram(color="black", fill="white")+
   facet_grid(Sex ~ .)+

@@ -128,7 +128,8 @@ Regression<-c(rep("ZIWeibull",length(dom)*2),rep("ZIGamma",length(dom)*2))
 media2 = data.frame(Scaled_Age=c(dom,dom,dom,dom),media.1=media,Sex=Sex,grupo=Regression)
 
 
-jpeg(file=paste(wd,"/Figure_applied","/mean_distance.jpg",sep=""), height = 4, width = 6, units = 'in', res=300)
+jpeg(here("Figure_applied","mean_distance.jpg"), height = 4, width = 6, units = 'in', res=300)
+
 par(xpd=NA)
 ggplot(data=media2, aes(x = Scaled_Age, y = media.1, group=Sex)) +
   #  geom_point(show.legend=FALSE, shape = 10) +
@@ -138,6 +139,7 @@ ggplot(data=media2, aes(x = Scaled_Age, y = media.1, group=Sex)) +
   guides(fill=guide_legend("Regression"))+
   scale_color_discrete(name = "Regression")+
   facet_grid(grupo~.)
+
 dev.off()
 
 #Hypothesis test weibull
