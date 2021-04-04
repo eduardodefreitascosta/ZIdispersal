@@ -29,13 +29,13 @@ a description of the distribution to be used in the model. For ZIreg this is a c
 }
 }
 \details{
-When dist="gamma", the model is a hurdle model using a logistic regression for zeros and gamma for distances larger than zero (Jackson, 2016; Nobre et al., 2017). The gamma model, by default, covariates are placed on both parameters of the distribution ,in this case the "shape" and "rate". When dist="weibull", the mode is a zero-inflated-censored weibull model (Louzada et al., 2018). A typical predictor has the form response ~ terms where response is the (numeric) response vector and terms is a series of terms which specifies a linear predictor for response. Also indicators for zero and for censoring must be provided in specific arguments. A terms specification of the form first + second indicates all the terms in first together with all the terms in second with any duplicates removed. A specification of the form first:second indicates the set of terms obtained by taking the interactions of all terms in first with all terms in second. The specification first*second indicates the cross of first and second. This is the same as first + second + first:second. The terms in the formula will be re-ordered so that main effects come first, followed by the interactions, all second-order, all third-order and so on: to avoid this pass a terms object as the formula.
+When dist="gamma", the model is a hurdle model using a logistic regression for zeros and gamma for distances larger than zero (Jackson, 2016; Nobre et al., 2017). In the gamma model, by default, covariates are placed on both parameters of the distribution ,in this case the "shape" and "rate". When dist="weibull", the mode is a zero-inflated-censored weibull model (Louzada et al., 2018). A typical predictor has the form response ~ terms where response is the (numeric) response vector and terms is a series of terms which specifies a linear predictor for response. Also indicators for zero and for censoring must be provided in specific arguments. A terms specification of the form first + second indicates all the terms in first together with all the terms in second with any duplicates removed. A specification of the form first:second indicates the set of terms obtained by taking the interactions of all terms in first with all terms in second. The specification first*second indicates the cross of first and second. This is the same as first + second + first:second. The terms in the formula will be re-ordered so that main effects come first, followed by the interactions, all second-order, all third-order and so on: to avoid this pass a terms object as the formula.
 
 }
 
 \value{
 ZIreg returns different objects dependent on the distribution used. For "gamma" it is the output from a logistic glm object and a list of class "flexsurvreg" (Jackson, 2016). For more information see ?glm and ?flexsurvreg.
-The function "summary" can be applied to each object of the output: "$Logistic or $Gamma". 
+The function "summary" can be applied to each object of the output: "$Logistic or $Gamma".
 
 For dist="weibull", the output is a list:
 
@@ -54,9 +54,9 @@ For dist="weibull", the output is a list:
 \references{
 Jackson, C. (2016). flexsurv: A Platform for Parametric Survival Modeling in R. Journal of Statistical Software, 70(8), 1-33. doi:10.18637/jss.v070.i08
 
-Louzada F, Moreira FF, de Oliveira MR (2018) A zero-inflated non defaultrate regression model for credit scoring data. Communications in Statistics-Theory and Methods 47(12):3002-3021
+Louzada F, Moreira FF, de Oliveira MR (2018). A zero-inflated non defaultrate regression model for credit scoring data. Communications in Statistics-Theory and Methods 47(12):3002-3021. doi: 10.1080/03610926.2017.1346803
 
-Nobre AA, Carvalho MS, Griep RH, Fonseca MdJMd, Melo ECP, Santos IdS,Chor D (2017) Multinomial model and zero-inflated gamma model to studytime spent on leisure time physical activity: an example of elsa-brasil. Revista de saude publica 51:76
+Nobre AA, Carvalho MS, Griep RH, Fonseca MdJM, Melo ECP, Santos IdS,Chor D (2017). Multinomial model and zero-inflated gamma model to studytime spent on leisure time physical activity: an example of elsa-brasil. Revista de saude publica 51:76. doi: 10.11606/s1518-8787.2017051006882
 }
 \author{
 Eduardo de Freitas Costa, Silvana Schneider, Giulia Bagatini Carlotto, Taina Cabalheiro, Mauro Oliveira
@@ -72,13 +72,13 @@ Eduardo de Freitas Costa, Silvana Schneider, Giulia Bagatini Carlotto, Taina Cab
 }
 \examples{
 ##---- Exemple of wild boar dispersal ----
-url for the dataset download: 
+url for the dataset download:
 https://github.com/eduardodefreitascosta/ZIdispersal/blob/master/ZIdispersal/wild_boar.rds
 
 Functions to run the model:
-Zireg(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="weibull")
+ZIreg(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="weibull")
 or
-Zireg(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="gamma")
+ZIreg(dist~sex+age,zero=zero,censor=delta,data=wild_boar,dist="gamma")
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
