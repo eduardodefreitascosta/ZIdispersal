@@ -48,8 +48,10 @@ for (j in 1:length(N)){
     a<-glm(dados$z ~ dados$x,family=binomial(link='logit'))
     b<-summary(a)
     
-    c<-flexsurvreg(Surv(dados$t, dados$d,type='right')~dados$x,dist="gamma",subset=dados$z==0,
-                   method="Nelder-Mead",control=list(fnscale = 20,reltol = 1e-1))
+    c<-flexsurvreg(Surv(t, d,type='right')~x,
+                   anc = list(shape = ~ x),data=dados,dist="gamma",subset=dados$z==0)
+    
+    
     
     
     varic=try(solve(c$opt$hessian))
@@ -58,8 +60,8 @@ for (j in 1:length(N)){
     param_Gamma<- file.path(wd.sim, "param_Gamma.txt") 
     Erro_Gamma <- file.path(wd.sim, "Erro_Gamma.txt")
     
-    cat(c(a$coefficients,c$res[1],c$res[2],c$res[3], c$loglik,c$AIC),file = param_Gamma,append = TRUE, "\n") 
-    cat(c(b$coefficients[1,2],b$coefficients[2,2],varic[1,1],varic[2,2],varic[3,3]),file = Erro_Gamma,append = TRUE, "\n") 
+    cat(c(a$coefficients,c$res[1],c$res[2],c$res[3],c$res[4],c$loglik,c$AIC),file = param_Gamma,append = TRUE, "\n") 
+    cat(c(b$coefficients[1,2],b$coefficients[2,2],varic[1,1],varic[2,2],varic[3,3],varic[4,4]),file = Erro_Gamma,append = TRUE, "\n") 
   }
   
 }
@@ -77,42 +79,48 @@ gammas800 <- read.table(paste(wd,'/','Output/simulation',N[4],'/','modelos_No_p1
 gammas1000 <- read.table(paste(wd,'/','Output/simulation',N[5],'/','modelos_No_p1/gamma/param_gamma.txt',sep=''))
 
 #exp means
-gammas<-cbind(apply(cbind((gammas200[,3:4]),gammas200[,5]),2,mean),
-              apply(cbind((gammas400[,3:4]),gammas400[,5]),2,mean),
-              apply(cbind((gammas600[,3:4]),gammas600[,5]),2,mean),
-              apply(cbind((gammas800[,3:4]),gammas800[,5]),2,mean),
-              apply(cbind((gammas1000[,3:4]),gammas1000[,5]),2,mean))
+gammas<-cbind(apply(gammas200[,3:6],2,mean),
+              apply(gammas400[,3:6],2,mean),
+              apply(gammas600[,3:6],2,mean),
+              apply(gammas800[,3:6],2,mean),
+              apply(gammas1000[,3:6],2,mean)
+        )
 
 #means logistic part
 logis<-cbind(apply((gammas200[,1:2]),2,mean),
              apply((gammas400[,1:2]),2,mean),
              apply((gammas600[,1:2]),2,mean),
              apply((gammas800[,1:2]),2,mean),
-             apply((gammas1000[,1:2]),2,mean))
+             apply((gammas1000[,1:2]),2,mean)
+      )
 
 #SD of the parameters (exp)
-gdps<-cbind(apply(cbind((gammas200[,3:4]),gammas200[,5]),2,sd),
-            apply(cbind((gammas400[,3:4]),gammas400[,5]),2,sd),
-            apply(cbind((gammas600[,3:4]),gammas600[,5]),2,sd),
-            apply(cbind((gammas800[,3:4]),gammas800[,5]),2,sd),
-            apply(cbind((gammas1000[,3:4]),gammas1000[,5]),2,sd))
+gdps<-cbind(apply(gammas200[,3:6],2,sd),
+            apply(gammas400[,3:6],2,sd),
+            apply(gammas600[,3:6],2,sd),
+            apply(gammas800[,3:6],2,sd),
+            apply(gammas1000[,3:6],2,sd)
+      )
 
 #SD of parameters logistic part
 dpsg<-cbind(apply(gammas200[,1:2],2,sd),
             apply(gammas400[,1:2],2,sd),
             apply(gammas600[,1:2],2,sd),
             apply(gammas800[,1:2],2,sd),
-            apply(gammas1000[,1:2],2,sd))
+            apply(gammas1000[,1:2],2,sd)
+      )
 
 
 #Variance
-varianciag<-cbind(apply((gammas200[,1:2]),2,var),
-                  apply((gammas400[,1:2]),2,var),
-                  apply((gammas600[,1:2]),2,var),
-                  apply((gammas800[,1:2]),2,var),
-                  apply((gammas1000[,1:2]),2,var))
+varianciag<-cbind(apply((gammas200[,1:6]),2,var),
+                  apply((gammas400[,1:6]),2,var),
+                  apply((gammas600[,1:6]),2,var),
+                  apply((gammas800[,1:6]),2,var),
+                  apply((gammas1000[,1:6]),2,var)
+            )
 
 viesg<-rbind( logis[1,]+3,logis[2,]-1 )
+
 
 eqmg<-viesg^2+varianciag  
 
@@ -140,46 +148,90 @@ varsg1<-cbind(apply(sqrt(varg200[,1:2]),2,mean),
 
 
 
-#Plots of betas parameters from logistic
+#Plots of betas parameters from gamma and logit models
 
-logi<-data.frame(w1=logis[1,],w2=logis[2,],w3=logis[1,]-beta5,w4=logis[2,]-beta6,w5=varianciag[1,],w6=varianciag[2,],samp=samp)
+logi<-data.frame(w1=logis[1,],w2=logis[2,],w3=gammas[1,],w4=gammas[2,],w5=gammas[3,],
+                 w6=gammas[4,],samp=samp)
 
-l1 <- ggplot(data = logi, aes(x = samp, y = w1)) +
+l1 <- ggplot(data = logi, aes(x = samp, y = w3)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  geom_hline(yintercept = beta5) +
-  labs(y = expression(paste("Mean (",hat(beta)[0],")" )), x = "Sample Size")
+  labs(y = expression(paste("Mean ( ", hat(beta)[1], " )")), x = "Sample Size")
 
-l2 <- ggplot(data = logi, aes(x = samp, y = w2)) +
+l2 <- ggplot(data = logi, aes(x = samp, y = w4)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  geom_hline(yintercept = beta6) +
-  labs(y = expression(paste("Mean (",hat(beta)[1],")" )), x = "Sample Size")
+  labs(y = expression(paste("Mean ( ", hat(beta)[2], " )","Rate")), x = "Sample Size")
 
 l3 <- ggplot(data = logi, aes(x = samp, y = w5)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[0], " )")), x = "Sample Size")
+  labs(y = expression(paste("Mean ( ", hat(beta)[3], " )")), x = "Sample Size")
 
-l4 <- ggplot(data = logi, aes(x = samp, y = w4)) +
+l4 <- ggplot(data = logi, aes(x = samp, y = w6)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("BIAS ( ", hat(beta)[1], " )")), x = "Sample Size")
+  labs(y = expression(paste("Mean ( ", hat(beta)[4], " )")), x = "Sample Size")
 
-l5 <- ggplot(data = logi, aes(x = samp, y = w5)) +
+l5 <- ggplot(data = logi, aes(x = samp, y = w1)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
-  labs(y = expression(paste("VAR ( ", hat(beta)[0], " )")), x = "Sample Size")
+  geom_hline(yintercept = beta5) +
+  labs(y = expression(paste("Mean (",hat(beta)[5],")" )), x = "Sample Size")
 
-l6 <- ggplot(data = logi, aes(x = samp, y = w6)) +
+l6 <- ggplot(data = logi, aes(x = samp, y = w2)) +
+  geom_point(show.legend = FALSE, shape = 16) +
+  geom_line(linetype = 2) +
+  geom_hline(yintercept = beta6) +
+  labs(y = expression(paste("Mean (",hat(beta)[6],")" )), x = "Sample Size")
+
+
+png(file=paste(wd,"/Figure_gamma","/mean_gamma.png",sep=""), height = 4, width = 6, units = 'in', res=300)
+grid.arrange(arrangeGrob(l1,l2,l3,l4,l5,l6, ncol=2))
+dev.off()
+
+
+#Plots of variances from gamma and logit models
+
+varg<-varianciag
+
+logi1<-data.frame(w1=varg[1,],w2=varg[2,],w3=varg[3,],w4=varg[4,],w5=varg[5,],
+                 w6=varg[6,],samp=samp)
+
+v1 <- ggplot(data = logi1, aes(x = samp, y = w3)) +
   geom_point(show.legend = FALSE, shape = 16) +
   geom_line(linetype = 2) +
   labs(y = expression(paste("VAR ( ", hat(beta)[1], " )")), x = "Sample Size")
 
-tiff(file=paste(wd,"/Figure_gamma","/param_logistic.tiff",sep=""), height = 4, width = 6, units = 'in', res=300)
-grid.arrange(arrangeGrob(l1,l2,l3,l4,l5,l6, ncol=2))
-dev.off()
+v2 <- ggplot(data = logi1, aes(x = samp, y = w4)) +
+  geom_point(show.legend = FALSE, shape = 16) +
+  geom_line(linetype = 2) +
+  labs(y = expression(paste("VAR ( ", hat(beta)[2], " )")), x = "Sample Size")
 
+v3 <- ggplot(data = logi1, aes(x = samp, y = w5)) +
+  geom_point(show.legend = FALSE, shape = 16) +
+  geom_line(linetype = 2) +
+  labs(y = expression(paste("VAR ( ", hat(beta)[3], " )")), x = "Sample Size")
+
+v4 <- ggplot(data = logi1, aes(x = samp, y = w6)) +
+  geom_point(show.legend = FALSE, shape = 16) +
+  geom_line(linetype = 2) +
+  labs(y = expression(paste("VAR ( ", hat(beta)[4], " )")), x = "Sample Size")
+
+v5 <- ggplot(data = logi1, aes(x = samp, y = w1)) +
+  geom_point(show.legend = FALSE, shape = 16) +
+  geom_line(linetype = 2) +
+  labs(y = expression(paste("VAR (",hat(beta)[5],")" )), x = "Sample Size")
+
+v6 <- ggplot(data = logi1, aes(x = samp, y = w2)) +
+  geom_point(show.legend = FALSE, shape = 16) +
+  geom_line(linetype = 2) +
+  labs(y = expression(paste("VAR (",hat(beta)[6],")" )), x = "Sample Size")
+
+
+png(file=paste(wd,"/Figure_gamma","/var_gamma.png",sep=""), height = 4, width = 6, units = 'in', res=300)
+grid.arrange(arrangeGrob(v1,v2,v3,v4,v5,v6, ncol=2))
+dev.off()
 
 ##Tables
 dir.create(paste(wd,"/Tables_gamma",sep=""))
@@ -206,7 +258,7 @@ mediag<-function(x){
   for (j in 1:5){
     po[j]=exp(logis[1,j]+logis[2,j]*x)/(1+exp(logis[1,j]+logis[2,j]*x))
     scale.1[j]=gammas[2,j]*exp(gammas[3,j]*x)
-    para[j]<-gammas[1,j]
+    para[j]<-gammas[1,j]*exp(gammas[4,j]*x)
   }
   media.g=(1-po)*(para)*(1/scale.1)
   return(rbind(media.g,po))
@@ -222,7 +274,7 @@ colnames(means)[1:5]<-c("200","400","600","800","1000")
 
 row.names(means)<-c("Mean x=1","P0 x=1","Mean x=-1","P0 x=-1")
 
-write.table(means,here("Tables_gamma","means.txt"),sep=";",row.names = T)
+write.table(round(means,3),here("Tables_gamma","means.txt"),sep=";",row.names = T)
 
 
 ##Gamma part
@@ -347,7 +399,9 @@ row.names(tabg1000)<-c(1,2)
 final<-rbind(tabg200,tabg400,tabg600,tabg800,tabg1000)
 row.names(final)<-rep(c("beta_0", "beta_1"),5)
 colnames(final)<-c("media","LCI","UCI","SD of betas","Mean Std Err","vies","eqmg","CP")
-final
-write.table(final,here("Tables_gamma","final.txt"),sep=";",row.names = F)
+
+kable(round(final,3))
+
+write.table(round(final,3),here("Tables_gamma","final.txt"),sep=";",row.names = F)
 
 

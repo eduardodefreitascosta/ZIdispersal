@@ -1,7 +1,7 @@
 rm(list=ls(all=TRUE)) 
 
 #Packages to be used
-packages<-c("here")
+packages<-c("here","flexsurv","ggplot2")
 
 
 # Install packages not yet installed
@@ -29,4 +29,4 @@ source(here("Scripts","Applied_data_generation.R"))
 
 ##Model application
 
-source(here("Scripts","fit_Applied.R"))
+source(here("Scripts","Fit_Applied.R"))

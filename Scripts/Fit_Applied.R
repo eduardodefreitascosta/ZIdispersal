@@ -55,14 +55,17 @@ rownames(weibull_parameters)<-c("Shape","age","sex","Scale","age","sex","interce
 
 summary(glm(data$zero ~ (data$age)+data$sex,family=binomial(link='logit'))->a)
 
-b<-flexsurvreg(Surv(data$dist, data$delta,type='right')~(data$age)+data$sex,dist="gamma",subset = data$zer==0)
+b<-flexsurvreg(Surv(dist, delta,type='right')~age+sex,
+               data=data,
+               anc = list(shape = ~ age+sex),
+               dist="gamma",subset = data$zer==0)
 
 
 gamma_parameters<-rbind(cbind(summary(a)$coefficients[,1:2],confint(a)),cbind(b$res[,1],b$res[,4],b$res[,2:3]))
 
 colnames(gamma_parameters)<-c("Parameter","Standard error","2.5%","97.5%")
 
-rownames(gamma_parameters)<-c("Intercept","age","sex","Shape","Rate","age","Sex")
+rownames(gamma_parameters)<-c("Intercept","age","sex","Shape","Rate","ra(age)","ra(Sex)","sha(age)","sha(sex)")
 
 
 #write.table(gamma_parameters,here("Tables_applied","gamma.txt"),sep=";",row.names = T)
@@ -94,7 +97,8 @@ mw1(15,0)
 mg1<-function(x,y){
   scale.1<-( ((b$res[2]))*exp(b$res[3]*x+b$res[4]*y))
   p=exp(a$coefficients[1]+a$coefficients[2]*x+a$coefficients[3]*y)/(1+(exp(a$coefficients[1]+a$coefficients[2]*x+a$coefficients[3]*y)))
-  mg1<-(1-p)*b$res[1]*(1/scale.1)
+  shape.1<-b$res[1]*exp(b$res[5]*x+b$res[6]*y)
+  mg1<-(1-p)*shape.1*(1/scale.1)
   mg1
 }
 #female

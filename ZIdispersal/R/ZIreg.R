@@ -108,9 +108,12 @@ attach(data)
 
 
   (fmla2 <- as.formula(paste(paste("Surv(t,censor,type='right') ~ " , (Reduce(paste,deparse(mt[[3]])))))))
-
-
-  b<-flexsurvreg(fmla2,data=data,subset=t!=0,dist=dist)
+  
+  (fmla3 <- as.formula(paste(paste(" ~ " , (Reduce(paste,deparse(mt[[3]])))))))
+  
+  
+  b<-flexsurvreg(fmla2, anc = list(shape = fmla3),
+                data=data,subset=t!=0,dist=dist)
 
 
   summa<-list(a,b)
