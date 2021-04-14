@@ -1,29 +1,5 @@
 
-model <- function(N,varp){
-  a       =  exp(varp[1])*exp(y*varp[2])
-  lam     =  exp(varp[3])*exp(y*varp[4])
-  
-  # Parameters - WEIGHT IN ZEROS AND INFS: GAMMA ZERO AND GAMMA ONES WITH A COVARIABLE
- # gamm_zer = (exp(varp[5])*exp(y*varp[6]))/(1+exp(varp[5])*exp(y*varp[6])+exp(varp[7])*exp(y*varp[8]))
-  gamm_zer = (exp(varp[5])*exp(y*varp[6]))/(1+exp(varp[5])*exp(y*varp[6]))  
- # gamm_inf = (exp(varp[7])*exp(y*varp[8]))/(1+exp(varp[5])*exp(y*varp[6])+exp(varp[7])*exp(y*varp[8]))
-  
-  U=runif(N)
-  V=runif(N,gamm_zer,1)
-  y=numeric(N)
-  for(i in 1:N){
-    if(U[i]<=gamm_zer[i]){ 
-      y[i] = 0  
-    }else 
-      if(U[i]>gamm_zer[i] & U[i] <= 1){
-        #y[i]=qweibull(V[i], a, lam)
-        y[i] = lam[i]*((-log(1 - (V[i]-gamm_zer[i])/(1-gamm_zer[i])))^(1/a[i]))
-      }else {      
-        y[i]=+Inf
-      }
-  }
-  return(y)
-}
+
 
 
 GPE=function(varp)
@@ -45,3 +21,6 @@ GPE=function(varp)
   adFunc   = sum(log(g))
   return(adFunc)
 }
+
+
+

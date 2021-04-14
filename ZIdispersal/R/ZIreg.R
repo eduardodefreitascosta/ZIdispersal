@@ -111,9 +111,18 @@ attach(data)
   
   (fmla3 <- as.formula(paste(paste(" ~ " , (Reduce(paste,deparse(mt[[3]])))))))
   
+  custom.gamma <- list(name = dist,
+                       pars = c("shape", "scale"),
+                       location = "scale",
+                       transforms = c(log, log),
+                       inv.transforms = c(exp, exp),
+                       inits = function(t){
+                         c(0.01, 100)},
+                       method="Nelder-Mead"
+  )
   
   b<-flexsurvreg(fmla2, anc = list(shape = fmla3),
-                data=data,subset=t!=0,dist=dist)
+                data=data,subset=t!=0,dist=custom.gamma)
 
 
   summa<-list(a,b)

@@ -20,7 +20,8 @@ invisible(lapply(packages, library, character.only = TRUE))
 ###################
 
 
-source(here("Scripts","Simulation_data_generation.R"))
+source(here("Scripts","Simulation_weibull_generation.R"))
+source(here("Scripts","Simulation_gamma_generation.R"))
 
 
 ##################
@@ -39,3 +40,15 @@ source(here("Scripts","fit_ZIWeibull.R"))
 
 source(here("Scripts","fit_ZIGamma.R"))
 
+
+###################
+# Simulation plots#
+###################
+
+source(here("Scripts","Graphics_beta.R"))
+
+##################
+# Crossed tables #
+##################
+
+source(here("Scripts","Crossed_results.R"))

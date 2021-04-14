@@ -55,17 +55,28 @@ rownames(weibull_parameters)<-c("Shape","age","sex","Scale","age","sex","interce
 
 summary(glm(data$zero ~ (data$age)+data$sex,family=binomial(link='logit'))->a)
 
+custom.gamma <- list(name = "gamma",
+                     pars = c("shape", "scale"),
+                     location = "scale",
+                     transforms = c(log, log),
+                     inv.transforms = c(exp, exp),
+                     inits = function(t){
+                       c(0.01, 100)},
+                     method="Nelder-Mead"
+)
+
 b<-flexsurvreg(Surv(dist, delta,type='right')~age+sex,
-               data=data,
-               anc = list(shape = ~ age+sex),
-               dist="gamma",subset = data$zer==0)
+               anc = list(shape = ~ age+sex),data=data,dist=custom.gamma,
+               subset=data$zero==0,
+               control=list(fnscale = 2500)
+)
 
 
 gamma_parameters<-rbind(cbind(summary(a)$coefficients[,1:2],confint(a)),cbind(b$res[,1],b$res[,4],b$res[,2:3]))
 
 colnames(gamma_parameters)<-c("Parameter","Standard error","2.5%","97.5%")
 
-rownames(gamma_parameters)<-c("Intercept","age","sex","Shape","Rate","ra(age)","ra(Sex)","sha(age)","sha(sex)")
+rownames(gamma_parameters)<-c("Intercept","age","sex","Shape","Scale","Sc(age)","Sc(Sex)","Sha(age)","Sha(sex)")
 
 
 #write.table(gamma_parameters,here("Tables_applied","gamma.txt"),sep=";",row.names = T)
@@ -95,10 +106,10 @@ mw1(15,0)
 #x=age; y=sex{1=female, 0=male}
 
 mg1<-function(x,y){
+  shape.1<-b$res[1]*exp(b$res[5]*x+b$res[6]*y)
   scale.1<-( ((b$res[2]))*exp(b$res[3]*x+b$res[4]*y))
   p=exp(a$coefficients[1]+a$coefficients[2]*x+a$coefficients[3]*y)/(1+(exp(a$coefficients[1]+a$coefficients[2]*x+a$coefficients[3]*y)))
-  shape.1<-b$res[1]*exp(b$res[5]*x+b$res[6]*y)
-  mg1<-(1-p)*shape.1*(1/scale.1)
+  mg1<-(1-p)*shape.1*scale.1
   mg1
 }
 #female
@@ -155,8 +166,8 @@ Lic=betas_weibull-1.96*SE_weibull
 Uic=betas_weibull+1.96*SE_weibull
 
 #Hypothesis test gamma
-betas_gamma=b$res[,1]
-SE_gamma=b$res[,4]
+betas_gamma=b$res.t[,1]
+SE_gamma=b$res.t[,4]
 wald_gamma = betas_gamma^2/SE_gamma^2
 pchisq(wald_gamma,1,lower.tail = F)
 
