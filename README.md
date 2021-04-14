@@ -20,14 +20,12 @@
 ### Note that several folders were created:
   - **Output**: Stores the datasets generated and the results of the simulations models;
   
-  - **Figure_weibull**: Stores the figures of the simulated ZIWeibull model;
+  - **Figure_applied**: Stores the figures of the simulated ZIWeibull and ZIGamma applied models ;
   
-  - **Tables_weibull**: Stores the tables generated in the ZIWeibull model;
+  - **Tables_applied**: Stores the tables generated in the ZIWeibull and ZIGamma applied models;
   
-  - **Figure_gamma**: Stores the figures of the simulated ZIGamma model;
+  - **Figure_simulation**: Stores the figures of the simulated ZIGamma model (gamma data) and ZIWeibull model (Weibull data);
   
-  - **Tables_gamma**: Stores the tables generated in the ZIGamma model;
+  - **Tables_simulation**: Stores the tables of the simulated ZIGamma model (gamma data) and ZIWeibull model (Weibull data);
   
-  - **Figure_applied**: Stores the figures for both ZIGamma and ZIWeibull models for the applied part;
-  
-  - **Tables_applied**: Stores the tables for both ZIGamma and ZIWeibull models for the applied part.
+  - **Figure_cross**: Stores the figures for both ZIGamma and ZIWeibull using Weibull and gamma data, respectively.
