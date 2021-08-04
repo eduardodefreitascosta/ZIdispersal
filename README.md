@@ -2,7 +2,7 @@
 
 
 
-## This is a paper describying two zero-inflated-right-censored regression models (Weibull and gamma) for wild boar displacement.
+## This is a paper describying two zero-inflated-right-censored regression models (Weibull and gamma) for wild boar displacement :boar:.
 
 ## The paper is available online:
 
